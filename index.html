@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NASA Solar System Explorer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-         :root {
-            --space-bg: #05070a;
-            --panel-bg: rgba(10, 15, 25, 0.98);
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --space-bg: #020508;
+            --panel-bg: rgba(6, 12, 24, 0.97);
             --nasa-blue: #0b3d91;
             --nasa-red: #fc3d21;
             --accent: #00e5ff;
-            --orbit-color: rgba(255, 255, 255, 0.08);
+            --accent-warm: #ff9d00;
+            --accent-green: #00ff88;
+            --orbit-color: rgba(0, 229, 255, 0.06);
             --text-primary: #ffffff;
-            --text-secondary: #cccccc;
-            --text-muted: #999999;
+            --text-secondary: #b0bec5;
+            --text-muted: #607d8b;
             --text-accent: #00e5ff;
+            --border: rgba(0, 229, 255, 0.15);
         }
-        
+
+        * { box-sizing: border-box; }
+
         body {
             background-color: var(--space-bg);
             color: var(--text-primary);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             margin: 0;
             overflow: hidden;
             height: 100vh;
@@ -34,121 +38,117 @@
             flex-direction: column;
             cursor: default;
         }
-        
+
+        /* ===== HEADER ===== */
         .main-header {
-            height: 60px;
-            background: linear-gradient(90deg, #000 0%, #0a1523 100%);
-            border-bottom: 1px solid #333;
+            height: 56px;
+            background: linear-gradient(90deg, #000 0%, rgba(11, 61, 145, 0.3) 50%, #000 100%);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0px 20px;
+            padding: 0 20px;
             z-index: 100;
-            box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.5);
         }
-        
+
         .nasa-logo {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 18px;
+            letter-spacing: 2px;
             color: var(--text-primary);
-            font-weight: 700;
-            font-size: 22px;
+        }
+
+        .nasa-logo span { color: var(--nasa-red); }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .sim-date {
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            color: var(--accent);
             letter-spacing: 1px;
+            opacity: 0.8;
         }
-        
-        .nasa-logo span {
-            color: var(--nasa-red);
-        }
-        
+
         .status-indicator {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-secondary);
         }
-        
+
         .pulse-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px; height: 8px;
             border-radius: 50%;
-            background-color: #00ff88;
+            background: var(--accent-green);
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 8px rgba(0, 255, 136, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
-            }
+            0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(0,255,136,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
         }
-        
+
+        /* ===== LAYOUT ===== */
         .app-body {
             flex: 1;
             display: flex;
             position: relative;
             overflow: hidden;
         }
-        /* VIEWPORT */
-        
+
+        /* ===== VIEWPORT ===== */
         .viewport-container {
-            flex: 2.5;
+            flex: 1;
             position: relative;
             overflow: hidden;
-            background: radial-gradient(ellipse at center, #0a1528 0%, #05070a 70%);
+            background: radial-gradient(ellipse at 40% 50%, #0a1830 0%, #020508 65%);
         }
-        
-        .stars {
+
+        .stars-canvas {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: radial-gradient(2px 2px at 20px 30px, #eee, transparent), radial-gradient(2px 2px at 40px 70px, #fff, transparent), radial-gradient(1px 1px at 90px 40px, #ddd, transparent), radial-gradient(1px 1px at 130px 80px, #fff, transparent), radial-gradient(2px 2px at 160px 120px, #eee, transparent);
-            background-repeat: repeat;
+            width: 100%; height: 100%;
             z-index: 0;
         }
-        
+
         #camera-rig {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0px;
-            height: 0px;
-            transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            transition: transform 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             transform-style: preserve-3d;
             z-index: 2;
         }
-        
+
+        /* ===== ORBITS ===== */
         .orbit {
             position: absolute;
-            top: 0px;
-            left: 0px;
+            top: 0; left: 0;
             border: 1px solid var(--orbit-color);
             border-radius: 50%;
             transform-origin: center;
             animation: rotateOrbit linear infinite;
             pointer-events: none;
         }
-        
+
         @keyframes rotateOrbit {
-            from {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-            to {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
-        
-        .paused {
-            animation-play-state: paused !important;
-        }
-        
+
+        .paused { animation-play-state: paused !important; }
+
+        /* ===== PLANET ===== */
         .planet-hitbox {
             position: absolute;
-            top: 0px;
-            left: 50%;
+            top: 0; left: 50%;
             transform: translate(-50%, -50%);
             cursor: pointer;
             pointer-events: auto;
@@ -156,315 +156,568 @@
             justify-content: center;
             align-items: center;
             z-index: 5;
-            transition: transform 0.3s ease;
         }
-        
+
         .planet-label {
             position: absolute;
-            top: -30px;
+            top: -32px;
             color: var(--text-primary);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
             white-space: nowrap;
             opacity: 0;
             transition: opacity 0.3s;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             padding: 4px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border);
         }
-        
-        .planet-hitbox:hover .planet-label {
-            opacity: 1;
-        }
-        /* Sửa lớp này để hỗ trợ ảnh nền */
-        
+
+        .planet-hitbox:hover .planet-label { opacity: 1; }
+
         .planet-sphere {
             border-radius: 50%;
             background-size: cover;
-            /* Đảm bảo ảnh phủ kín khối cầu */
             background-position: center;
-            /* Căn giữa ảnh */
-            box-shadow: inset -8px -8px 20px rgba(0, 0, 0, 0.8), /* Tạo bóng tối phía sau */
-            inset 5px 5px 10px rgba(255, 255, 255, 0.2);
-            /* Tạo ánh sáng phía trước */
-            transition: all 0.3s ease;
+            box-shadow: inset -8px -8px 20px rgba(0,0,0,0.85),
+                        inset 4px 4px 10px rgba(255,255,255,0.15);
+            transition: all 0.35s ease;
             position: relative;
             overflow: hidden;
+            animation: selfRotate linear infinite;
         }
-        
+
+        @keyframes selfRotate {
+            from { background-position-x: 0%; }
+            to { background-position-x: 100%; }
+        }
+
         .planet-sphere::after {
             content: '';
             position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 120%;
-            height: 120%;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            top: -10%; left: -10%;
+            width: 120%; height: 120%;
+            background: radial-gradient(circle at 28% 28%, rgba(255,255,255,0.18) 0%, transparent 65%);
             border-radius: 50%;
+            pointer-events: none;
         }
-        
+
         .planet-hitbox:hover .planet-sphere {
-            box-shadow: 0px 0px 30px var(--accent), inset -8px -8px 20px rgba(0, 0, 0, 0.8), inset 5px 5px 10px rgba(255, 255, 255, 0.1);
-            transform: scale(1.3);
+            box-shadow: 0 0 35px var(--accent),
+                        inset -8px -8px 20px rgba(0,0,0,0.85),
+                        inset 4px 4px 10px rgba(255,255,255,0.1);
+            transform: scale(1.35);
         }
-        /* Sửa lớp Sun để chân thật hơn với ảnh */
-        
+
+        /* ===== SUN ===== */
         .sun-sphere {
             position: absolute;
-            top: 0px;
-            left: 0px;
+            top: 0; left: 0;
             transform: translate(-50%, -50%);
-            width: 85px;
-            height: 85px;
+            width: 88px; height: 88px;
             border-radius: 50%;
-            background-image: url('https://www.solarsystemscope.com/textures/download/2k_sun.jpg');
+            background-image: url('asset/texture/sun.jpg');
             background-size: cover;
-            box-shadow: 0px 0px 60px rgba(255, 152, 0, 0.7), 0px 0px 120px rgba(255, 87, 34, 0.4), inset 0px 0px 20px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 80px rgba(255,152,0,0.9),
+                        0 0 140px rgba(255,87,34,0.5),
+                        0 0 220px rgba(255,152,0,0.2);
             z-index: 10;
             cursor: pointer;
-            animation: sunPulse 4s infinite alternate;
+            animation: sunPulse 3s infinite alternate, sunRotate 20s linear infinite;
         }
-        
+
         @keyframes sunPulse {
-            from {
-                box-shadow: 0px 0px 80px rgba(255, 87, 34, 0.8), 0px 0px 150px rgba(255, 152, 0, 0.4);
-            }
-            to {
-                box-shadow: 0px 0px 100px rgba(255, 87, 34, 1), 0px 0px 180px rgba(255, 152, 0, 0.6);
-            }
+            from { box-shadow: 0 0 70px rgba(255,87,34,0.8), 0 0 130px rgba(255,152,0,0.4); }
+            to { box-shadow: 0 0 110px rgba(255,87,34,1), 0 0 200px rgba(255,152,0,0.7); }
         }
-        
+
+        @keyframes sunRotate {
+            from { background-position: 0% center; }
+            to { background-position: 100% center; }
+        }
+
+        /* ===== RINGS ===== */
         .rings {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             border-radius: 50%;
-            border: 6px double rgba(194, 172, 110, 0.6);
+            border: 7px solid rgba(194,172,110,0.5);
+            border-top-color: transparent;
+            border-bottom-color: transparent;
             transform: translate(-50%, -50%) rotateX(75deg);
             pointer-events: none;
-            box-shadow: 0px 0px 15px rgba(194, 172, 110, 0.3);
+            box-shadow: 0 0 20px rgba(194,172,110,0.25);
         }
-        
-        .moon-sphere {
-            cursor: pointer;
-            pointer-events: auto;
-            /* Cho phép nhận sự kiện click */
-            transition: all 0.3s ease;
-        }
-        
-        .moon-sphere:hover {
-            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
-            transform: translate(-50%, -50%) scale(1.2);
-        }
-        /* INFO PANEL */
-        
-        .info-panel {
-            flex: 1;
-            background: var(--panel-bg);
-            border-left: 1px solid #333;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            max-width: 500px;
-            min-width: 400px;
-            z-index: 10;
-            box-shadow: -5px 0px 20px rgba(0, 0, 0, 0.5);
-        }
-        
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 20;
-            color: var(--text-secondary);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(40, 40, 40, 0.8);
-            transition: all 0.3s;
-            display: none;
-        }
-        
-        .close-btn:hover {
-            color: var(--text-primary);
-            background: rgba(255, 50, 50, 0.3);
-            transform: rotate(90deg);
-        }
-        
-        .active-data {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            animation: fadeIn 0.5s;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0px);
-            }
-        }
-        
-        .panel-top {
-            padding: 25px;
-            border-bottom: 1px solid #333;
-            background: linear-gradient(to bottom, rgba(20, 30, 48, 0.95) 0%, rgba(10, 15, 25, 0.95) 100%);
-        }
-        /* Quỹ đạo của vệ tinh (Mặt Trăng) */
-        
+
+        /* ===== MOON ===== */
         .moon-orbit {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            /* Đường quỹ đạo mờ hơn */
+            top: 50%; left: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             animation: rotateOrbit linear infinite;
-            /* Dùng chung animation xoay */
         }
-        /* Hình khối của vệ tinh */
-        
+
         .moon-sphere {
             position: absolute;
-            top: 0;
-            left: 50%;
+            top: 0; left: 50%;
             transform: translate(-50%, -50%);
             border-radius: 50%;
             background-size: cover;
-            box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.8);
+            box-shadow: inset -2px -2px 5px rgba(0,0,0,0.85);
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        
-        .panel-bottom {
-            flex: 1;
-            padding: 20px;
-            background: rgba(8, 12, 22, 0.9);
-            overflow-y: auto;
+
+        .moon-sphere:hover {
+            box-shadow: 0 0 12px rgba(255,255,255,0.5), inset -2px -2px 5px rgba(0,0,0,0.8);
+            transform: translate(-50%, -50%) scale(1.25);
         }
-        
-        .planet-title {
+
+        /* ===== CONTROLS (bottom left) ===== */
+        .controls {
+            position: absolute;
+            bottom: 20px; left: 20px;
             display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 8px;
+            z-index: 5;
         }
-        
-        .planet-icon {
-            width: 50px;
-            height: 50px;
+
+        .control-btn {
+            width: 42px; height: 42px;
             border-radius: 50%;
+            background: rgba(6, 12, 24, 0.9);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            color: var(--text-primary);
-            box-shadow: 0px 0px 15px rgba(0, 229, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.25s;
+            font-size: 14px;
+            backdrop-filter: blur(8px);
         }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .stat-box {
-            background: rgba(15, 20, 35, 0.7);
-            border: 1px solid #444;
-            border-radius: 6px;
-            padding: 15px;
-            transition: all 0.3s;
-        }
-        
-        .stat-box:hover {
+
+        .control-btn:hover {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent);
             border-color: var(--accent);
-            transform: translateY(-3px);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-            background: rgba(20, 30, 50, 0.8);
+            transform: scale(1.1);
         }
-        
-        .stat-label {
-            display: block;
+
+        .control-btn.active-btn {
+            background: rgba(0, 229, 255, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ===== SPEED CONTROL ===== */
+        .speed-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(6, 12, 24, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 5;
+            backdrop-filter: blur(8px);
+        }
+
+        .speed-label {
             font-size: 11px;
             color: var(--text-muted);
-            text-transform: uppercase;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .speed-value {
+            font-size: 12px;
+            color: var(--accent);
+            font-family: 'Orbitron', monospace;
+            min-width: 36px;
+            text-align: right;
+        }
+
+        input[type=range].speed-slider {
+            -webkit-appearance: none;
+            width: 100px; height: 3px;
+            border-radius: 2px;
+            background: rgba(0, 229, 255, 0.2);
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type=range].speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        /* ===== SCALE DISPLAY ===== */
+        .scale-display {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            background: rgba(6, 12, 24, 0.85);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: 'Orbitron', monospace;
             letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-        
-        .stat-value {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-accent);
-            margin-top: 5px;
-        }
-        
-        .section-title {
-            font-size: 16px;
+            border: 1px solid var(--border);
             color: var(--text-secondary);
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #444;
-            font-weight: 600;
+            z-index: 5;
+            backdrop-filter: blur(8px);
         }
-        
+
+        /* ===== PLANET SEARCH (top left of viewport) ===== */
+        .planet-nav {
+            position: absolute;
+            top: 16px; left: 16px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+            flex-wrap: wrap;
+            max-width: 340px;
+        }
+
+        .planet-nav-btn {
+            background: rgba(6, 12, 24, 0.85);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: 'Orbitron', monospace;
+            cursor: pointer;
+            transition: all 0.25s;
+            backdrop-filter: blur(8px);
+            letter-spacing: 0.5px;
+        }
+
+        .planet-nav-btn:hover, .planet-nav-btn.active-planet {
+            background: rgba(0,229,255,0.12);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ===== INFO PANEL ===== */
+        .info-panel {
+            width: 380px;
+            min-width: 380px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        /* Panel top hero */
+        .panel-hero {
+            position: relative;
+            height: 160px;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-hero-bg {
+            width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(6px) brightness(0.4) saturate(1.5);
+            transform: scale(1.1);
+            transition: all 0.6s ease;
+        }
+
+        .panel-hero-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+
+        .hero-planet-preview {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            background-size: cover;
+            box-shadow: 0 0 30px rgba(0,229,255,0.4),
+                        inset -5px -5px 10px rgba(0,0,0,0.6);
+            margin-right: 16px;
+            flex-shrink: 0;
+            border: 2px solid rgba(0,229,255,0.3);
+        }
+
+        .hero-text h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            font-weight: 900;
+            margin: 0 0 4px 0;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .hero-text .planet-type-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: rgba(0,229,255,0.15);
+            border: 1px solid rgba(0,229,255,0.3);
+            color: var(--accent);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px; right: 12px;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--text-secondary);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            z-index: 20;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,50,50,0.3);
+            color: #fff;
+            border-color: rgba(255,100,100,0.5);
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.3);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 10px 6px;
+            text-align: center;
+            font-size: 10px;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.25s;
+            text-transform: uppercase;
+        }
+
+        .panel-tab.active-tab {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: rgba(0,229,255,0.05);
+        }
+
+        .panel-tab:hover { color: var(--text-secondary); }
+
+        /* Scrollable panel body */
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0,229,255,0.2) transparent;
+        }
+
+        .panel-body::-webkit-scrollbar { width: 4px; }
+        .panel-body::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.2); border-radius: 2px; }
+
+        .tab-content { display: none; padding: 16px; animation: fadeSlide 0.3s ease; }
+        .tab-content.active-content { display: block; }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: rgba(0, 229, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.25s;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(0,229,255,0.35);
+            background: rgba(0,229,255,0.07);
+        }
+
+        .stat-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', monospace;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .stat-value.warm { color: var(--accent-warm); }
+
+        /* Description */
+        .p-desc-text {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Section titles */
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            margin-top: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-head i { color: var(--accent); }
+
+        /* Gallery */
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
-        
+
         .gallery-item {
-            background: #000;
-            border: 1px solid #444;
             border-radius: 6px;
             overflow: hidden;
-            height: 120px;
+            height: 110px;
             position: relative;
-            transition: all 0.3s;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.25s;
         }
-        
+
         .gallery-item:hover {
             transform: scale(1.03);
-            border-color: var(--accent);
-            box-shadow: 0px 0px 20px rgba(0, 229, 255, 0.2);
+            border-color: rgba(0,229,255,0.4);
+            box-shadow: 0 0 20px rgba(0,229,255,0.15);
         }
-        
+
         .gallery-item img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             object-fit: cover;
-            opacity: 0.9;
-            transition: opacity 0.3s;
+            opacity: 0.85;
+            transition: opacity 0.25s;
         }
-        
-        .gallery-item:hover img {
-            opacity: 1;
-        }
-        
+
+        .gallery-item:hover img { opacity: 1; }
+
         .gallery-label {
             position: absolute;
-            bottom: 0px;
-            width: 100%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, transparent 100%);
-            font-size: 12px;
-            text-align: center;
-            padding: 10px 5px;
+            bottom: 0; width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+            font-size: 10px;
+            padding: 14px 8px 6px;
             color: var(--text-primary);
             font-weight: 500;
         }
-        
+
+        /* Fun facts */
+        .fact-card {
+            background: rgba(0, 229, 255, 0.04);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .fact-card .fact-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            color: var(--accent);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Moons list */
+        .moon-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .moon-card:hover {
+            border-color: rgba(0,229,255,0.3);
+            background: rgba(0,229,255,0.05);
+        }
+
+        .moon-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ccc, #555);
+            flex-shrink: 0;
+        }
+
+        .moon-info h4 {
+            font-size: 13px; font-weight: 600;
+            margin: 0 0 2px 0;
+            color: var(--text-primary);
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .moon-info p { font-size: 11px; color: var(--text-muted); margin: 0; }
+
+        /* Default / empty state */
         .default-state {
             height: 100%;
             display: flex;
@@ -473,965 +726,1057 @@
             align-items: center;
             padding: 40px;
             text-align: center;
-            color: var(--text-secondary);
         }
-        
-        .default-icon {
-            font-size: 70px;
-            margin-bottom: 20px;
-            color: #444;
-            animation: float 6s ease-in-out infinite;
+
+        .default-orbit-visual {
+            position: relative;
+            width: 140px; height: 140px;
+            margin: 0 auto 28px;
         }
-        
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-15px);
-            }
-            100% {
-                transform: translateY(0px);
-            }
+
+        .default-orbit-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(0,229,255,0.15);
         }
-        
+
+        .default-orbit-ring:nth-child(1) { inset: 0; animation: spin 12s linear infinite; }
+        .default-orbit-ring:nth-child(2) { inset: 15px; animation: spin 8s linear infinite reverse; }
+        .default-orbit-ring:nth-child(3) { inset: 30px; animation: spin 5s linear infinite; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .default-sun {
+            position: absolute;
+            width: 30px; height: 30px;
+            background: radial-gradient(circle, #ff9900, #ff5500);
+            border-radius: 50%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px rgba(255,150,0,0.7);
+        }
+
         .default-state h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            letter-spacing: 2px;
             color: var(--text-primary);
             margin-bottom: 10px;
         }
-        
+
         .default-state p {
-            color: var(--text-secondary);
-            max-width: 300px;
-            line-height: 1.5;
+            color: var(--text-muted);
+            font-size: 12px;
+            line-height: 1.7;
+            max-width: 260px;
         }
-        
-        .controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
+
+        .hint-chips {
             display: flex;
-            gap: 10px;
-            z-index: 5;
-        }
-        
-        .control-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(30, 40, 60, 0.9);
-            border: 1px solid #555;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
+            margin-top: 20px;
         }
-        
-        .control-btn:hover {
-            background: rgba(50, 70, 110, 0.9);
-            color: var(--text-primary);
-            border-color: var(--accent);
-            transform: scale(1.1);
-        }
-        
-        .scale-display {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(10, 15, 25, 0.9);
-            padding: 8px 15px;
+
+        .hint-chip {
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 14px;
-            border: 1px solid #444;
-            color: var(--text-secondary);
-            z-index: 5;
+            border: 1px solid var(--border);
+            font-size: 10px;
+            font-family: 'Orbitron', monospace;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
         }
-        /* Cải thiện độ tương phản chữ */
-        
-        .text-info {
-            color: var(--text-accent) !important;
-            font-weight: 500;
-        }
-        
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-        
-        .text-secondary {
-            color: var(--text-secondary) !important;
-        }
-        
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        
-        p,
-        span,
-        div {
-            color: var(--text-secondary);
-        }
-        
-        .panel-bottom .small {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-        /* Scrollbar styling */
-        
-        .panel-bottom::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .panel-bottom::-webkit-scrollbar-track {
-            background: rgba(20, 25, 35, 0.5);
-            border-radius: 4px;
-        }
-        
-        .panel-bottom::-webkit-scrollbar-thumb {
-            background: rgba(100, 100, 120, 0.5);
-            border-radius: 4px;
-        }
-        
-        .panel-bottom::-webkit-scrollbar-thumb:hover {
-            background: rgba(120, 120, 140, 0.7);
-        }
-        /* --- OVERLAY THÔNG BÁO --- */
-        
+
+        /* ===== WELCOME OVERLAY ===== */
         #welcome-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(5, 7, 10, 0.95);
-            /* Nền tối che web */
-            backdrop-filter: blur(10px);
-            /* Làm mờ hậu cảnh */
+            inset: 0;
+            background: rgba(2, 5, 8, 0.97);
+            backdrop-filter: blur(20px);
             z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.5s ease;
+            transition: opacity 0.5s ease;
         }
-        
+
         .disclaimer-card {
             background: var(--panel-bg);
-            border: 1px solid var(--accent);
-            padding: 40px;
-            border-radius: 15px;
-            max-width: 500px;
+            border: 1px solid var(--border);
+            padding: 48px 40px;
+            border-radius: 16px;
+            max-width: 480px;
             text-align: center;
-            box-shadow: 0 0 50px rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 60px rgba(0,229,255,0.12);
         }
-        
-        .warning-icon {
-            font-size: 50px;
-            color: var(--nasa-red);
+
+        .disclaimer-icon {
+            font-size: 48px;
             margin-bottom: 20px;
+            display: block;
         }
-        
+
+        .disclaimer-card h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            letter-spacing: 3px;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .disclaimer-card p { color: var(--text-secondary); font-size: 13px; line-height: 1.7; }
+
         .purpose-note {
-            font-size: 0.9rem;
+            font-size: 11px;
             color: var(--text-muted);
             font-style: italic;
-            margin: 20px 0;
+            margin: 16px 0 24px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            line-height: 1.6;
         }
-        
+
         .accept-btn {
             background: transparent;
             border: 1px solid var(--accent);
             color: var(--accent);
-            padding: 10px 30px;
-            border-radius: 5px;
-            font-weight: bold;
+            padding: 12px 36px;
+            border-radius: 6px;
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .accept-btn:hover {
             background: var(--accent);
             color: #000;
-            box-shadow: 0 0 20px var(--accent);
+            box-shadow: 0 0 25px rgba(0,229,255,0.5);
         }
-        /* --- FOOTER ĐẸP --- */
-        
-        .main-footer {
-            height: 40px;
-            background: rgba(0, 0, 0, 0.8);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+        /* ===== 3D BUTTON ===== */
+        .btn-3d-link {
+            text-decoration: none;
+        }
+
+        .btn-view-3d {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--accent);
+            background: rgba(0,229,255,0.06);
+            border: 1px solid rgba(0,229,255,0.4);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-view-3d:hover {
+            background: rgba(0,229,255,0.15);
+            box-shadow: 0 0 20px rgba(0,229,255,0.3);
+            color: #fff;
+        }
+
+        /* ===== FOOTER ===== */
+        #footer {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0,0,0,0.8);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 11px;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 16px;
             z-index: 100;
-            font-size: 13px;
-            letter-spacing: 2px;
         }
-        
-        .main-footer h2 {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-muted);
-        }
-        
-        .main-footer span {
-            color: var(--nasa-red);
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(252, 61, 33, 0.5);
-        }
-        
-        .btn-3d {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            text-decoration: none;
-            perspective: 800px;
-            z-index: 50;
-        }
-        
-        .btn-3d span {
-            display: inline-block;
-            padding: 14px 26px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #00e5ff;
-            background: linear-gradient(145deg, #0a1a2f, #050b14);
-            border: 1px solid #00e5ff;
-            border-radius: 12px;
-            transform: rotateX(15deg) rotateY(-15deg);
-            box-shadow: 0 10px 0 #022b35, 0 18px 30px rgba(0, 0, 0, .6);
-            transition: all .3s ease;
-        }
-        
-        .btn-3d:hover span {
-            transform: rotateX(0deg) rotateY(0deg) translateY(6px);
-            box-shadow: 0 4px 0 #022b35, 0 10px 20px rgba(0, 0, 0, .8);
-            color: #fff;
-        }
-        
-        #social-footer {
-            position: fixed;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 18px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: rgba(10, 15, 30, 0.6);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-        }
-        
-        #social-footer a {
-            color: #cfd8dc;
-            font-size: 18px;
-            transition: all 0.3s ease;
-        }
-        
-        #social-footer a:hover {
-            color: #00e5ff;
-            transform: translateY(-3px) scale(1.15);
-            text-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
-        }
-        
-        #footer {
-            text-align: center;
-            padding: 16px 10px;
-            color: #9fb3c8;
-            font-size: 12px;
-        }
-        
-        .footer-social {
-            margin-top: 8px;
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-        }
-        
+
         .footer-social a {
-            color: #9fb3c8;
-            font-size: 16px;
-            transition: all 0.25s ease;
+            color: var(--text-muted);
+            font-size: 15px;
+            margin: 0 6px;
+            transition: all 0.25s;
         }
-        
+
         .footer-social a:hover {
-            color: #00e5ff;
-            transform: translateY(-2px);
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0,229,255,0.6);
+        }
+
+        /* ===== LIGHTBOX ===== */
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.93);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+        }
+
+        #lightbox.show { display: flex; }
+
+        #lightbox img {
+            max-width: 85vw;
+            max-height: 85vh;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 0 60px rgba(0,229,255,0.2);
+        }
+
+        #lightbox-close {
+            position: absolute;
+            top: 20px; right: 24px;
+            font-size: 28px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        /* ===== COMPARE PANEL ===== */
+        .compare-toggle {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: rgba(6, 12, 24, 0.85);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.25s;
+            backdrop-filter: blur(8px);
+            z-index: 10;
+        }
+
+        .compare-toggle:hover { color: var(--accent); border-color: var(--accent); }
+
+        /* ===== TOOLTIP POPUPS FOR INTERESTING STATS ===== */
+        .stat-card[title] { cursor: help; }
+
+        /* Responsive hint */
+        @media (max-width: 768px) {
+            .info-panel { min-width: 300px; width: 300px; }
+            .planet-nav { display: none; }
         }
     </style>
 </head>
 
 <body>
-    <div id="welcome-overlay">
-        <div class="disclaimer-card">
-            <i class="fas fa-exclamation-triangle warning-icon"></i>
-            <h2>THÔNG BÁO HỆ THỐNG</h2>
-            <p>Website đang trong quá trình thử nghiệm. Một số thông tin và hình ảnh có thể chưa chính xác hoàn toàn với thực tế thiên văn.</p>
-            <p class="purpose-note">Lưu ý: Trang web này được tạo ra để trình diễn kỹ thuật lập trình, không dùng vào mục đích giáo dục chuyên sâu.<br> Kiến nghị sử dụng máy tính để truy cập trang web để có trải nghiệm đầy đủ.</p>
-            <button onclick="acceptDisclaimer()" class="accept-btn">ĐỒNG Ý VÀ TRUY CẬP</button>
-        </div>
+<!-- Welcome Overlay -->
+<div id="welcome-overlay">
+    <div class="disclaimer-card">
+        <span class="disclaimer-icon">🚀</span>
+        <h2>SOLAR SYSTEM EXPLORER</h2>
+        <p>Khám phá hệ mặt trời với dữ liệu khoa học và hình ảnh từ NASA. Trang web đang trong quá trình thử nghiệm.</p>
+        <p class="purpose-note">
+            <i class="fas fa-desktop me-1"></i>
+            Khuyến nghị sử dụng máy tính để trải nghiệm đầy đủ.<br>
+            Tạo bởi <strong>vwudev</strong> · Mục đích minh họa kỹ thuật.
+        </p>
+        <button onclick="acceptDisclaimer()" class="accept-btn">
+            <i class="fas fa-rocket me-2"></i>KHÁM PHÁ NGAY
+        </button>
     </div>
-    <header class="main-header">
-        <div class="nasa-logo"><i class="fas fa-rocket me-2"></i>NASA <span>Solar System</span> </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+    <span id="lightbox-close" onclick="closeLightbox()">×</span>
+    <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- Header -->
+<header class="main-header">
+    <div class="nasa-logo"><i class="fas fa-rocket me-2"></i>NASA <span>Solar</span> System</div>
+    <div class="header-center">
+        <div class="sim-date" id="sim-date">—</div>
+    </div>
+    <div class="d-flex align-items-center gap-3">
         <div class="status-indicator">
             <div class="pulse-dot"></div>
-            <span>Realtime Tracking Active</span>
+            <span>Live Tracking</span>
         </div>
-    </header>
+        <button class="btn-view-3d" onclick="goTo3D()">
+            <i class="fas fa-cube"></i>CHẾ ĐỘ 3D
+        </button>
+    </div>
+</header>
 
-    <main class="app-body">
-        <section class="viewport-container" id="viewport">
-            <div class="stars"></div>
-            <div id="camera-rig">
-                <div class="sun-sphere" onclick="focusSun()" title="Mặt Trời"></div>
+<main class="app-body">
+    <!-- Viewport -->
+    <section class="viewport-container" id="viewport">
+        <canvas class="stars-canvas" id="starsCanvas"></canvas>
+
+        <!-- Planet nav shortcuts -->
+        <div class="planet-nav" id="planetNav">
+            <button class="planet-nav-btn" data-planet="sun" onclick="focusSun()">☀️ Mặt Trời</button>
+        </div>
+
+        <div id="camera-rig">
+            <div class="sun-sphere" onclick="focusSun()" title="Mặt Trời"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-btn" onclick="pauseOrbits(true)" title="Tạm dừng" id="pauseBtn">
+                <i class="fas fa-pause"></i>
             </div>
-
-            <div class="controls">
-                <div class="control-btn" onclick="goTo3D()" title="Xem 3D">
-                    <i class="fas fa-cube"></i>
-                </div>
-
-                <div class="control-btn" onclick="pauseOrbits(true)" title="Tạm dừng">
-                    <i class="fas fa-pause"></i>
-                </div>
-
-                <div class="control-btn" onclick="pauseOrbits(false)" title="Tiếp tục">
-                    <i class="fas fa-play"></i>
-                </div>
-
-                <div class="control-btn" onclick="resetView()" title="Đặt lại">
-                    <i class="fas fa-home"></i>
-                </div>
+            <div class="control-btn" onclick="pauseOrbits(false)" title="Tiếp tục" id="playBtn">
+                <i class="fas fa-play"></i>
             </div>
-
-
-            <div class="scale-display" id="scaleDisplay">Tỷ lệ: 1:10 tỷ</div>
-        </section>
-
-        <aside class="info-panel">
-            <div class="close-btn" id="closeBtn" onclick="resetView()" title="Đóng">
-                <i class="fas fa-times"></i>
+            <div class="control-btn" onclick="resetView()" title="Đặt lại">
+                <i class="fas fa-home"></i>
             </div>
-
-            <div id="default-state" class="default-state">
-                <i class="fas fa-satellite default-icon"></i>
-                <h3 class="h5 mb-3">NASA Solar System Explorer</h3>
-                <p class="small">Chọn một hành tinh để xem thông tin chi tiết về quỹ đạo, thành phần và bề mặt</p>
-                <div class="mt-4 small text-muted">
-                    <i class="fas fa-mouse-pointer me-2"></i>Hãy nhấp vào hành tinh bạn muốn
-                </div>
+            <div class="control-btn" onclick="toggleOrbits()" title="Hiện/ẩn quỹ đạo" id="orbitToggleBtn">
+                <i class="fas fa-circle-dot"></i>
             </div>
+            <div class="control-btn" onclick="toggleNightMode()" title="Chế độ sáng/tối" id="nightBtn">
+                <i class="fas fa-moon"></i>
+            </div>
+        </div>
 
-            <div id="active-data" class="active-data">
-                <div class="panel-top">
-                    <div class="planet-title">
-                        <div class="planet-icon" id="p-icon"></div>
-                        <div>
-                            <h1 id="p-name" class="h4 fw-bold text-white mb-1"></h1>
-                            <div id="p-type" class="small text-info"></div>
-                        </div>
+        <!-- Speed -->
+        <div class="speed-panel">
+            <span class="speed-label">TỐC ĐỘ</span>
+            <input type="range" class="speed-slider" id="speedSlider" min="0.1" max="5" step="0.1" value="1">
+            <span class="speed-value" id="speedVal">1.0×</span>
+        </div>
+
+        <div class="scale-display" id="scaleDisplay">Tỷ lệ: 1:10 tỷ</div>
+    </section>
+
+    <!-- Info Panel -->
+    <aside class="info-panel">
+        <!-- Default state -->
+        <div id="default-state" class="default-state">
+            <div class="default-orbit-visual">
+                <div class="default-orbit-ring"></div>
+                <div class="default-orbit-ring"></div>
+                <div class="default-orbit-ring"></div>
+                <div class="default-sun"></div>
+            </div>
+            <h3>SOLAR SYSTEM</h3>
+            <p>Nhấp vào một hành tinh để xem thông tin chi tiết, hình ảnh bề mặt và dữ liệu khoa học.</p>
+            <div class="hint-chips">
+                <span class="hint-chip">☀️ Mặt Trời</span>
+                <span class="hint-chip">🪐 Sao Thổ</span>
+                <span class="hint-chip">🌍 Trái Đất</span>
+                <span class="hint-chip">🔴 Sao Hỏa</span>
+            </div>
+        </div>
+
+        <!-- Active planet state -->
+        <div id="active-data" style="display:none; flex-direction:column; height:100%; animation: fadeSlide 0.4s ease;">
+            <!-- Hero -->
+            <div class="panel-hero">
+                <div class="panel-hero-bg" id="hero-bg"></div>
+                <div class="panel-hero-content">
+                    <div class="hero-planet-preview" id="hero-preview"></div>
+                    <div class="hero-text">
+                        <h2 id="p-name"></h2>
+                        <span class="planet-type-badge" id="p-type"></span>
                     </div>
-                    <p id="p-desc" class="small text-light mb-4"></p>
+                </div>
+                <div class="close-btn" id="closeBtn" onclick="resetView()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
 
+            <!-- Tabs -->
+            <div class="panel-tabs">
+                <div class="panel-tab active-tab" onclick="switchTab('overview')">
+                    <i class="fas fa-globe me-1"></i>Tổng quan
+                </div>
+                <div class="panel-tab" onclick="switchTab('gallery')">
+                    <i class="fas fa-images me-1"></i>Hình ảnh
+                </div>
+                <div class="panel-tab" onclick="switchTab('facts')">
+                    <i class="fas fa-star me-1"></i>Thú vị
+                </div>
+                <div class="panel-tab" onclick="switchTab('moons')">
+                    <i class="fas fa-moon me-1"></i>Vệ tinh
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <!-- Overview Tab -->
+                <div class="tab-content active-content" id="tab-overview">
+                    <p class="p-desc-text" id="p-desc"></p>
+
+                    <div class="section-head"><i class="fas fa-chart-bar"></i>DỮ LIỆU KHOA HỌC</div>
                     <div class="stats-grid">
-                        <div class="stat-box">
+                        <div class="stat-card" title="Gia tốc trọng trường bề mặt">
                             <span class="stat-label">TRỌNG LỰC</span>
                             <div class="stat-value" id="p-grav"></div>
                         </div>
-                        <div class="stat-box">
+                        <div class="stat-card" title="Vận tốc trung bình trên quỹ đạo">
                             <span class="stat-label">VẬN TỐC QUỸ ĐẠO</span>
                             <div class="stat-value" id="p-speed"></div>
                         </div>
-                        <div class="stat-box">
-                            <span class="stat-label">KHOẢNG CÁCH ĐẾN MẶT TRỜI</span>
-                            <div class="stat-value" id="p-distance"></div>
+                        <div class="stat-card" title="Khoảng cách trung bình đến Mặt Trời">
+                            <span class="stat-label">CÁCH MẶT TRỜI</span>
+                            <div class="stat-value warm" id="p-distance"></div>
                         </div>
-                        <div class="stat-box">
-                            <span class="stat-label">CHU KỲ QUAY</span>
-                            <div class="stat-value" id="p-period"></div>
+                        <div class="stat-card" title="Thời gian hoàn thành một vòng quỹ đạo">
+                            <span class="stat-label">CHU KỲ QUỸ ĐẠO</span>
+                            <div class="stat-value warm" id="p-period"></div>
                         </div>
+                        <div class="stat-card" title="Đường kính xích đạo">
+                            <span class="stat-label">ĐƯỜNG KÍNH</span>
+                            <div class="stat-value" id="p-diameter"></div>
+                        </div>
+                        <div class="stat-card" title="Số vệ tinh tự nhiên đã biết">
+                            <span class="stat-label">VỆ TINH</span>
+                            <div class="stat-value" id="p-moons-count"></div>
+                        </div>
+                    </div>
+
+                    <div class="section-head"><i class="fas fa-info-circle"></i>CHI TIẾT</div>
+                    <div class="fact-card" id="p-details-card">
+                        <span class="fact-num">NOTE</span>
+                        <span id="p-details"></span>
                     </div>
                 </div>
-                <div class="panel-bottom">
-                    <div class="section-title">
-                        <i class="fas fa-images me-2"></i>BỀ MẶT VÀ ĐẶC ĐIỂM
-                    </div>
-                    <div class="gallery-grid" id="gallery"></div>
 
-                    <div class="section-title mt-4">
-                        <i class="fas fa-info-circle me-2"></i>THÔNG TIN BỔ SUNG
-                    </div>
-                    <div class="small mt-3" id="p-details">
-                        Thông tin chi tiết sẽ hiển thị tại đây...
-                    </div>
+                <!-- Gallery Tab -->
+                <div class="tab-content" id="tab-gallery">
+                    <div class="section-head"><i class="fas fa-images"></i>ẢNH NASA</div>
+                    <div class="gallery-grid" id="gallery"></div>
+                </div>
+
+                <!-- Facts Tab -->
+                <div class="tab-content" id="tab-facts">
+                    <div class="section-head"><i class="fas fa-bolt"></i>SỰ THẬT THÚ VỊ</div>
+                    <div id="facts-list"></div>
+                </div>
+
+                <!-- Moons Tab -->
+                <div class="tab-content" id="tab-moons">
+                    <div class="section-head"><i class="fas fa-moon"></i>CÁC VỆ TINH</div>
+                    <div id="moons-list"></div>
                 </div>
             </div>
-        </aside>
-    </main>
+        </div>
+    </aside>
+</main>
 
-    <script>
-        const allMoonsData = {
-            'Mặt Trăng': {
-                name: 'Mặt Trăng',
-                type: 'Vệ tinh của Trái Đất',
-                desc: 'Vệ tinh tự nhiên duy nhất của Trái Đất.',
-                grav: '1.62 m/s²',
-                speed: '1.02 km/s',
-                distance: '384,400 km',
-                period: '27.3 ngày',
-                icon: 'fas fa-moon',
-                color: '#DDD',
-                details: 'Đặc sản: Có hiện tượng khóa thủy triều và là nơi duy nhất ngoài Trái Đất con người đã đặt chân đến.',
-                imgs: [{
-                    label: 'Dấu chân Apollo',
-                    url: 'https://cdnmedia.baotintuc.vn/2014/07/16/16/03/apollo2.jpg'
-                }]
-            },
-            'Phobos': {
-                name: 'Phobos',
-                type: 'Vệ tinh của Sao Hỏa',
-                desc: 'Vệ tinh lớn hơn trong hai vệ tinh của Sao Hỏa.',
-                grav: '0.0057 m/s²',
-                speed: '2.13 km/s',
-                distance: '9,377 km',
-                period: '7.6 giờ',
-                icon: 'fas fa-meteor',
-                color: '#A52A2A',
-                details: 'Đặc sản: Hình dạng giống củ khoai tây và đang tiến dần về phía Sao Hỏa, dự kiến sẽ va chạm trong 50 triệu năm tới.',
-                imgs: [{
-                    label: 'Bề mặt gồ ghề',
-                    url: 'https://images--assets-nasa-gov.translate.goog/image/PIA10368/PIA10368~orig.jpg'
-                }]
-            },
-            'Io': {
-                name: 'Io',
-                type: 'Vệ tinh của Sao Mộc',
-                desc: 'Vệ tinh có hoạt động địa chất mạnh nhất.',
-                grav: '1.79 m/s²',
-                speed: '17.33 km/s',
-                distance: '421,700 km',
-                period: '1.7 ngày',
-                icon: 'fas fa-volcano',
-                color: '#FFD700',
-                details: 'Đặc sản: Có hơn 400 núi lửa đang hoạt động, phun ra lưu huỳnh cao tới 500km vào không gian.',
-                imgs: [{
-                    label: 'Núi lửa trên Io',
-                    url: 'https://images--assets-nasa-gov.translate.goog/image/PIA02308/PIA02308~orig.jpg'
-                }]
-            },
-            'Europa': {
-                name: 'Europa',
-                type: 'Vệ tinh của Sao Mộc',
-                desc: 'Vệ tinh có bề mặt băng giá phẳng mịn.',
-                grav: '1.31 m/s²',
-                speed: '13.74 km/s',
-                distance: '670,900 km',
-                period: '3.5 ngày',
-                icon: 'fas fa-icicles',
-                color: '#AFEEEE',
-                details: 'Đặc sản: Lớp vỏ băng dày bao phủ một đại dương nước lỏng khổng lồ bên dưới, nơi có khả năng tồn tại sự sống.',
-                imgs: [{
-                    label: 'Vết nứt trên băng',
-                    url: 'https://images--assets-nasa-gov.translate.goog/image/PIA00502/PIA00502~orig.jpg'
-                }]
-            },
-            'Titan': {
-                name: 'Titan',
-                type: 'Vệ tinh của Sao Thổ',
-                desc: 'Vệ tinh lớn nhất của Sao Thổ.',
-                grav: '1.35 m/s²',
-                speed: '5.57 km/s',
-                distance: '1,221,830 km',
-                period: '15.9 ngày',
-                icon: 'fas fa-cloud',
-                color: '#FFA500',
-                details: 'Đặc sản: Vệ tinh duy nhất có bầu khí quyển dày đặc và có các hồ chứa khí methane lỏng trên bề mặt.',
-                imgs: [{
-                    label: 'Bầu trời Titan',
-                    url: 'https://images--assets-nasa-gov.translate.goog/image/PIA08137/PIA08137~orig.jpg'
-                }]
-            }
+<footer id="footer">
+    <span>© 2026 vwudev · Galaxy Project</span>
+    <div class="footer-social">
+        <a href="https://github.com/vwudev" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+        <a href="https://www.facebook.com/only.vwu" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
+        <a href="#" target="_blank" title="Linktree"><i class="fas fa-link"></i></a>
+    </div>
+</footer>
+
+<script>
+// ===================== DATA =====================
+const allMoonsData = {
+    'Mặt Trăng': {
+        name: 'Mặt Trăng', type: 'Vệ tinh của Trái Đất',
+        desc: 'Vệ tinh tự nhiên duy nhất của Trái Đất, cách 384,400 km.',
+        grav: '1.62 m/s²', speed: '1.02 km/s', distance: '384,400 km', period: '27.3 ngày',
+        diameter: '3,474 km', moonsCount: '0',
+        icon: 'fas fa-moon', color: '#aaa',
+        details: 'Có hiện tượng khóa thủy triều và là nơi duy nhất ngoài Trái Đất con người đã đặt chân đến.',
+        facts: ['Con người lần đầu đặt chân lên Mặt Trăng vào năm 1969 qua sứ mệnh Apollo 11.', 'Mặt Trăng đang từ từ dịch chuyển ra xa Trái Đất khoảng 3.8 cm mỗi năm.', 'Nhiệt độ dao động từ -173°C đến +127°C do không có khí quyển.'],
+        imgs: [{ label: 'Dấu chân Apollo', url: 'https://cdnmedia.baotintuc.vn/2014/07/16/16/03/apollo2.jpg' }],
+        texture: 'asset/texture/moon.jpg', moons: []
+    },
+    'Phobos': {
+        name: 'Phobos', type: 'Vệ tinh của Sao Hỏa',
+        desc: 'Vệ tinh lớn hơn trong hai vệ tinh của Sao Hỏa, có hình dạng bất đối xứng.',
+        grav: '0.0057 m/s²', speed: '2.13 km/s', distance: '9,377 km', period: '7.6 giờ',
+        diameter: '22.2 km', moonsCount: '0',
+        icon: 'fas fa-meteor', color: '#8b4513',
+        details: 'Hình dạng giống củ khoai tây. Đang tiến dần về phía Sao Hỏa và dự kiến va chạm trong 50 triệu năm.',
+        facts: ['Phobos quay quanh Sao Hỏa 3 lần mỗi ngày Sao Hỏa.', 'Đây là một trong những vật thể tối nhất trong hệ mặt trời.'],
+        imgs: [{ label: 'Bề mặt gồ ghề', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Phobos_colour_2008.jpg/500px-Phobos_colour_2008.jpg' }],
+        texture: 'asset/texture/moon.jpg', moons: []
+    },
+    'Io': {
+        name: 'Io', type: 'Vệ tinh của Sao Mộc',
+        desc: 'Vệ tinh có hoạt động địa chất mạnh nhất trong hệ mặt trời.',
+        grav: '1.79 m/s²', speed: '17.33 km/s', distance: '421,700 km', period: '1.7 ngày',
+        diameter: '3,643 km', moonsCount: '0',
+        icon: 'fas fa-volcano', color: '#FFD700',
+        details: 'Có hơn 400 núi lửa đang hoạt động, phun ra lưu huỳnh cao tới 500km vào không gian.',
+        facts: ['Lực thủy triều từ Sao Mộc tạo ra nhiệt lượng khổng lồ bên trong Io.', 'Bề mặt Io thay đổi liên tục do các vụ phun trào.'],
+        imgs: [{ label: 'Núi lửa trên Io', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Io_highest_resolution_true_color.jpg/500px-Io_highest_resolution_true_color.jpg' }],
+        texture: 'asset/texture/moon.jpg', moons: []
+    },
+    'Europa': {
+        name: 'Europa', type: 'Vệ tinh của Sao Mộc',
+        desc: 'Vệ tinh có bề mặt băng giá phẳng mịn, ẩn chứa đại dương bên dưới.',
+        grav: '1.31 m/s²', speed: '13.74 km/s', distance: '670,900 km', period: '3.5 ngày',
+        diameter: '3,122 km', moonsCount: '0',
+        icon: 'fas fa-icicles', color: '#AFEEEE',
+        details: 'Lớp vỏ băng dày bao phủ đại dương nước lỏng khổng lồ - nơi có khả năng tồn tại sự sống.',
+        facts: ['Đại dương của Europa chứa nhiều nước hơn tất cả đại dương của Trái Đất cộng lại.', 'NASA đang lên kế hoạch sứ mệnh Europa Clipper để nghiên cứu chi tiết.'],
+        imgs: [{ label: 'Vết nứt trên băng', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Europa_in_natural_color.png/500px-Europa_in_natural_color.png' }],
+        texture: 'asset/texture/moon.jpg', moons: []
+    },
+    'Titan': {
+        name: 'Titan', type: 'Vệ tinh của Sao Thổ',
+        desc: 'Vệ tinh lớn nhất của Sao Thổ, có bầu khí quyển dày hơn Trái Đất.',
+        grav: '1.35 m/s²', speed: '5.57 km/s', distance: '1,221,830 km', period: '15.9 ngày',
+        diameter: '5,149 km', moonsCount: '0',
+        icon: 'fas fa-cloud', color: '#FFA500',
+        details: 'Vệ tinh duy nhất có bầu khí quyển dày đặc và có các hồ chứa khí methane lỏng trên bề mặt.',
+        facts: ['Titan là vệ tinh thứ 2 lớn nhất trong hệ mặt trời (sau Ganymede).', 'Áp suất khí quyển của Titan cao hơn Trái Đất 1.45 lần.'],
+        imgs: [{ label: 'Bầu trời Titan', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Titan_in_true_color.jpg/500px-Titan_in_true_color.jpg' }],
+        texture: 'asset/texture/moon.jpg', moons: []
+    },
+    'Ganymede': {
+        name: 'Ganymede', type: 'Vệ tinh của Sao Mộc',
+        desc: 'Vệ tinh lớn nhất trong hệ mặt trời, lớn hơn cả hành tinh Sao Thủy.',
+        grav: '1.43 m/s²', speed: '10.88 km/s', distance: '1,070,400 km', period: '7.2 ngày',
+        diameter: '5,268 km', moonsCount: '0',
+        icon: 'fas fa-globe', color: '#8b7355',
+        details: 'Vệ tinh duy nhất có từ trường riêng. Có thể chứa đại dương nước mặn bên dưới bề mặt băng.',
+        facts: ['Ganymede lớn hơn hành tinh Sao Thủy nhưng khối lượng chỉ bằng một nửa.', 'Đây là vệ tinh duy nhất ngoài Trái Đất được biết có từ trường riêng.'],
+        imgs: [{ label: 'Bề mặt Ganymede', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Ganymede_-_Perijove_34_Composite.png/500px-Ganymede_-_Perijove_34_Composite.png' }],
+        texture: 'asset/texture/moon.jpg', moons: []
+    },
+    'Callisto': {
+        name: 'Callisto', type: 'Vệ tinh của Sao Mộc',
+        desc: 'Vệ tinh có bề mặt lâu đời nhất trong hệ mặt trời với vô số hố thiên thạch.',
+        grav: '1.24 m/s²', speed: '8.21 km/s', distance: '1,882,700 km', period: '16.7 ngày',
+        diameter: '4,821 km', moonsCount: '0',
+        icon: 'fas fa-circle', color: '#6e6e6e',
+        details: 'Bề mặt không thay đổi hàng tỷ năm, ghi lại lịch sử sơ khai của hệ mặt trời.',
+        facts: ['Callisto có mật độ lỗ thiên thạch dày đặc nhất trong hệ mặt trời.', 'Vệ tinh này được coi là ứng viên tiềm năng cho căn cứ thám hiểm vũ trụ sâu.'],
+        imgs: [{ label: 'Hố thiên thạch', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Callisto.jpg/500px-Callisto.jpg' }],
+        texture: 'asset/texture/moon.jpg', moons: []
+    }
+};
+
+const planets = [
+    {
+        id:'mercury', name:'Sao Thủy', type:'Hành tinh đá', emoji:'☿',
+        texture:'https://www.solarsystemscope.com/textures/download/2k_mercury.jpg',
+        color:'#8C7853', size:16, dist:120, orbit:6,
+        grav:'3.7 m/s²', speed:'47.4 km/s', distance:'57.9 triệu km', period:'88 ngày',
+        diameter:'4,879 km', moonsCount:'0',
+        icon:'fas fa-temperature-high',
+        desc:'Hành tinh nhỏ nhất và gần Mặt Trời nhất trong hệ mặt trời. Không có khí quyển đáng kể, nhiệt độ thay đổi cực đoan từ -180°C đến +430°C.',
+        details:'Không có vệ tinh tự nhiên. Một ngày trên Sao Thủy dài hơn một năm của nó.',
+        facts:[
+            'Sao Thủy là hành tinh nhỏ nhất hệ mặt trời nhưng lại có mật độ cao thứ 2, chỉ sau Trái Đất.',
+            'Bởi vì không có khí quyển, bầu trời trên Sao Thủy luôn đen tuyền kể cả ban ngày.',
+            'Một ngày trên Sao Thủy (176 ngày Trái Đất) dài hơn một năm của nó (88 ngày Trái Đất).',
+            'Lõi sắt của Sao Thủy chiếm khoảng 85% bán kính hành tinh - tỷ lệ cao nhất hệ mặt trời.'
+        ],
+        imgs:[
+            { label:'Bề mặt hố thiên thạch', url:'https://science.nasa.gov/wp-content/uploads/2023/04/mercury-messenger-globe-pia15162.jpg' },
+            { label:'Địa hình đồng bằng', url:'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/psd/solar/2023/09/p/i/a/1/PIA19449-1.jpg' },
+            { label:'Vách núi cao', url:'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/cds/general/images/pia11351/PIA11351~orig.jpg' },
+            { label:'Cực băng giá', url:'https://images--assets-nasa-gov.translate.goog/image/PIA11406/PIA11406~orig.jpg' }
+        ],
+        moons:[]
+    },
+    {
+        id:'venus', name:'Sao Kim', type:'Hành tinh đá', emoji:'♀',
+        texture:'https://www.solarsystemscope.com/textures/download/2k_venus_atmosphere.jpg',
+        color:'#E3BB76', size:22, dist:170, orbit:10,
+        grav:'8.87 m/s²', speed:'35.0 km/s', distance:'108.2 triệu km', period:'225 ngày',
+        diameter:'12,104 km', moonsCount:'0',
+        icon:'fas fa-fire',
+        desc:'Hành tinh nóng nhất trong hệ mặt trời với nhiệt độ bề mặt 465°C. Hiệu ứng nhà kính mạnh mẽ khiến Sao Kim nóng hơn cả Sao Thủy dù xa Mặt Trời hơn.',
+        details:'Quay ngược chiều với hầu hết hành tinh. Một ngày trên Sao Kim dài hơn một năm của nó.',
+        facts:[
+            'Sao Kim quay theo chiều ngược lại (retrograde), nên Mặt Trời mọc ở phía Tây.',
+            'Áp suất khí quyển gấp 92 lần Trái Đất - tương đương áp suất dưới 900m nước biển.',
+            'Nhiệt độ bề mặt 465°C đủ để nấu chảy chì, và không thay đổi dù ngày hay đêm.',
+            'Sao Kim sáng thứ 3 trên bầu trời sau Mặt Trời và Mặt Trăng, còn được gọi là sao Hôm.'
+        ],
+        imgs:[
+            { label:'Mây axit sulfuric', url:'https://assets.science.nasa.gov/dynamicimage/assets/science/cds/general/images/2024/03/venus-mariner-10-pia23791-fig2-16x9-1.jpg' },
+            { label:'Núi lửa Maxwell', url:'https://cdn.nhandan.vn/images/d233c8299c7755bbf317d96e7a85fcf75f6070188da43f3323cd2443503acdaee210728701e3e2bff1a1d4ae187707a2123abe0e69f04437c9cdcaf4359d3bfa/sao_kim_2-1595300126894.jpg' },
+            { label:'Bề mặt đá nóng', url:'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/cds/general/images/pia00271/PIA00271~large.jpg' },
+            { label:'Khí quyển dày', url:'https://science-nasa-gov.translate.goog/wp-content/uploads/2023/05/venus-from-parker-solar-probe.webp' }
+        ],
+        moons:[]
+    },
+    {
+        id:'earth', name:'Trái Đất', type:'Hành tinh đá', emoji:'🌍',
+        texture:'https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg',
+        color:'#2271B3', size:24, dist:230, orbit:15,
+        grav:'9.81 m/s²', speed:'29.8 km/s', distance:'149.6 triệu km', period:'365.25 ngày',
+        diameter:'12,742 km', moonsCount:'1',
+        icon:'fas fa-globe-americas',
+        desc:'Hành tinh duy nhất được biết có sự sống trong vũ trụ. 71% bề mặt là nước, có từ trường bảo vệ và khí quyển phong phú giúp duy trì sự sống.',
+        details:'Có một vệ tinh tự nhiên là Mặt Trăng. Khí quyển chứa 78% Nitơ, 21% Oxy.',
+        facts:[
+            'Trái Đất là hành tinh dày đặc nhất trong hệ mặt trời với mật độ trung bình 5.5 g/cm³.',
+            'Từ trường của Trái Đất bảo vệ chúng ta khỏi bức xạ Mặt Trời và gió mặt trời.',
+            'Trái Đất không phải là hình cầu hoàn hảo - nó phồng ra ở xích đạo do lực ly tâm.',
+            'Trái Đất có tốc độ tự quay đang chậm dần dần - mỗi 100 năm thêm 1.4ms một ngày.'
+        ],
+        imgs:[
+            { label:'Đại dương xanh', url:'https://science.nasa.gov/wp-content/uploads/2024/06/eo-pe-iss062e117852.webp' },
+            { label:'Rừng nhiệt đới', url:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Aerial_view_of_the_Amazon_Rainforest.jpg/500px-Aerial_view_of_the_Amazon_Rainforest.jpg' },
+            { label:'Hoang mạc Sahara', url:'https://sudospaces.com/vietchem/2024/05/add-hoang-mac.jpg' },
+            { label:'Cực quang Bắc cực', url:'https://cdn.pixabay.com/animation/2022/10/13/19/47/19-47-21-130_512.gif' }
+        ],
+        moons:[{ name:'Mặt Trăng', size:6, dist:45, orbit:2, texture:'https://www.solarsystemscope.com/textures/download/2k_moon.jpg' }]
+    },
+    {
+        id:'mars', name:'Sao Hỏa', type:'Hành tinh đá', emoji:'🔴',
+        texture:'https://www.solarsystemscope.com/textures/download/2k_mars.jpg',
+        color:'#E27B58', size:18, dist:310, orbit:22,
+        grav:'3.71 m/s²', speed:'24.1 km/s', distance:'227.9 triệu km', period:'687 ngày',
+        diameter:'6,779 km', moonsCount:'2',
+        icon:'fas fa-mountain',
+        desc:'Hành tinh đỏ với bụi oxit sắt bao phủ bề mặt. Có núi lửa Olympus Mons cao 21.9km - lớn nhất hệ mặt trời, và hẻm núi Valles Marineris dài 4,000km.',
+        details:'Có 2 vệ tinh: Phobos và Deimos. Từng có nước lỏng trên bề mặt trong quá khứ.',
+        facts:[
+            'Olympus Mons trên Sao Hỏa là núi lửa cao nhất hệ mặt trời, cao gấp 2.5 lần Everest.',
+            'Sao Hỏa có bão bụi lớn nhất hệ mặt trời, có thể bao phủ cả hành tinh trong nhiều tháng.',
+            'Bằng chứng cho thấy Sao Hỏa từng có nước lỏng và có thể đã có sự sống nguyên thủy.',
+            'Một ngày trên Sao Hỏa (sol) dài 24 giờ 37 phút - gần bằng một ngày Trái Đất.'
+        ],
+        imgs:[
+            { label:'Bề mặt đỏ đặc trưng', url:'https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2021/5/17/909984/Sao-Hoa2.jpeg' },
+            { label:'Thung lũng Mariner', url:'https://ktmt.vnmediacdn.com/images/2021/12/18/42-1639761319-71.jpg' },
+            { label:'Cực băng CO₂', url:'https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2021/8/24/945427/Nuoc-Tren-Sao-Hoa.jpg' },
+            { label:'Bão bụi toàn cầu', url:'https://cdn-i.vtcnews.vn/files/ctv.quocte/2017/03/15/4_kvfu-2136.jpg' }
+        ],
+        moons:[
+            { name:'Phobos', size:4, dist:22, orbit:1.5, texture:'https://www.solarsystemscope.com/textures/download/2k_moon.jpg' },
+            { name:'Deimos', size:3, dist:32, orbit:2.5, texture:'https://www.solarsystemscope.com/textures/download/2k_moon.jpg' }
+        ]
+    },
+    {
+        id:'jupiter', name:'Sao Mộc', type:'Hành tinh khí khổng lồ', emoji:'🪐',
+        texture:'https://www.solarsystemscope.com/textures/download/2k_jupiter.jpg',
+        color:'#D39C7E', size:48, dist:420, orbit:40,
+        grav:'24.79 m/s²', speed:'13.1 km/s', distance:'778.5 triệu km', period:'12 năm',
+        diameter:'139,820 km', moonsCount:'95',
+        icon:'fas fa-wind',
+        desc:'Hành tinh lớn nhất hệ mặt trời với khối lượng gấp 318 lần Trái Đất. Vết Đỏ Lớn là cơn bão khổng lồ tồn tại ít nhất 400 năm.',
+        details:'Có ít nhất 95 vệ tinh. Từ trường mạnh gấp 20,000 lần Trái Đất.',
+        facts:[
+            'Sao Mộc lớn đến mức có thể chứa 1,300 Trái Đất bên trong.',
+            'Vết Đỏ Lớn là cơn bão đã tồn tại ít nhất 400 năm với đường kính lớn hơn Trái Đất.',
+            'Sao Mộc đóng vai trò "lá chắn" bảo vệ Trái Đất khỏi các thiên thạch bằng lực hấp dẫn.',
+            'Ngày trên Sao Mộc chỉ dài 9.9 giờ - ngắn nhất trong 8 hành tinh.'
+        ],
+        imgs:[
+            { label:'Vết Đỏ Lớn', url:'https://science-nasa-gov.translate.goog/wp-content/uploads/2024/03/jupiter-marble-pia22946-16x9-1.jpg' },
+            { label:'Vành đai mây', url:'https://science.nasa.gov/wp-content/uploads/2024/04/pia02855.gif' },
+            { label:'Cực quang', url:'https://e.khoahoc.tv/photos/image/2016/07/05/cuc-quang-tren-sao-moc.jpg' },
+            { label:'Vệ tinh Europa', url:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Europa_in_natural_color.png/500px-Europa_in_natural_color.png' }
+        ],
+        moons:[
+            { name:'Io', size:5, dist:55, orbit:2, texture:'https://www.solarsystemscope.com/textures/download/2k_moon.jpg' },
+            { name:'Europa', size:5, dist:65, orbit:3, texture:'https://www.solarsystemscope.com/textures/download/2k_moon.jpg' },
+            { name:'Ganymede', size:7, dist:78, orbit:4, texture:'https://www.solarsystemscope.com/textures/download/2k_moon.jpg' },
+            { name:'Callisto', size:6, dist:92, orbit:6, texture:'https://www.solarsystemscope.com/textures/download/2k_moon.jpg' }
+        ]
+    },
+    {
+        id:'saturn', name:'Sao Thổ', type:'Hành tinh khí khổng lồ', emoji:'🪐',
+        texture:'https://www.solarsystemscope.com/textures/download/2k_saturn.jpg',
+        color:'#C5AB6E', size:42, dist:540, orbit:55,
+        grav:'10.44 m/s²', speed:'9.7 km/s', distance:'1.4 tỷ km', period:'29 năm',
+        diameter:'116,460 km', moonsCount:'146',
+        icon:'fas fa-ring',
+        desc:'Nổi tiếng với hệ vành đai băng giá tráng lệ trải rộng 282,000 km. Sao Thổ có mật độ thấp nhất hệ mặt trời - có thể nổi trên nước.',
+        details:'Vành đai gồm băng và bụi đá. Có 146 vệ tinh được biết, lớn nhất là Titan.',
+        facts:[
+            'Sao Thổ là hành tinh duy nhất trong hệ mặt trời có mật độ thấp hơn nước (0.69 g/cm³).',
+            'Vành đai Sao Thổ rộng tới 282,000 km nhưng chỉ dày khoảng 10-30 mét.',
+            'Cực bắc Sao Thổ có một cơn bão hình lục giác bí ẩn kích thước bằng 2 Trái Đất.',
+            'Vận tốc gió trên Sao Thổ có thể đạt 1,800 km/h - nhanh hơn nhiều lần siêu bão Trái Đất.'
+        ],
+        imgs:[
+            { label:'Vành đai nổi tiếng', url:'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/cds/general/images/pia17474/PIA17474~large.jpg' },
+            { label:'Cực lục giác', url:'https://images--assets-nasa-gov.translate.goog/image/PIA17175/PIA17175~orig.jpg' },
+            { label:'Vệ tinh Titan', url:'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/psd/solar/2023/09/p/i/a/1/PIA18335.jpg' },
+            { label:'Bão cực', url:'https://assets.science.nasa.gov/content/dam/science/psd/solar/internal_resources/1491/saturn_hexagon_black_and_white.gif' }
+        ],
+        hasRings: true,
+        moons:[{ name:'Titan', size:8, dist:95, orbit:5, texture:'https://www.solarsystemscope.com/textures/download/2k_moon.jpg' }]
+    }
+];
+
+// ===================== APP STATE =====================
+let locked = false;
+let orbitVisible = true;
+let nightMode = false;
+let speedMultiplier = 1;
+let isPaused = false;
+let activePlanetId = null;
+
+// ===================== SIMULATION DATE =====================
+function updateSimDate() {
+    const now = new Date();
+    document.getElementById('sim-date').textContent =
+        now.toLocaleDateString('vi-VN', { weekday:'short', year:'numeric', month:'short', day:'numeric' }) +
+        ' ' + now.toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' });
+}
+setInterval(updateSimDate, 60000);
+updateSimDate();
+
+// ===================== STARS (canvas) =====================
+function drawStars() {
+    const canvas = document.getElementById('starsCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    for (let i = 0; i < 280; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const r = Math.random() * 1.2;
+        const alpha = Math.random() * 0.7 + 0.2;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+    }
+    // A few blue-tinted stars
+    for (let i = 0; i < 30; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        ctx.beginPath();
+        ctx.arc(x, y, 0.8, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(100,200,255,${Math.random() * 0.5 + 0.2})`;
+        ctx.fill();
+    }
+}
+
+window.addEventListener('resize', drawStars);
+
+// ===================== PLANET NAV BUTTONS =====================
+function buildPlanetNav() {
+    const nav = document.getElementById('planetNav');
+    planets.forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = 'planet-nav-btn';
+        btn.dataset.planet = p.id;
+        btn.innerHTML = `${p.emoji} ${p.name}`;
+        btn.onclick = () => {
+            const hitbox = document.querySelector(`[data-planet-id="${p.id}"]`);
+            if (hitbox) focusPlanet(hitbox, p);
         };
-        const planets = [{
-            id: 'mercury',
-            name: 'Sao Thủy',
-            type: 'Hành tinh đá',
-            texture: 'https://www.solarsystemscope.com/textures/download/2k_mercury.jpg', // Ảnh bề mặt
-            color: '#8C7853',
-            size: 16,
-            dist: 120,
-            orbit: 6,
-            grav: '3.7 m/s²',
-            speed: '47.4 km/s',
-            distance: '57.9 triệu km',
-            period: '88 ngày Trái đất',
-            icon: 'fas fa-temperature-high',
-            desc: 'Hành tinh nhỏ nhất và gần Mặt Trời nhất.',
-            details: 'Không có vệ tinh tự nhiên, bầu khí quyển rất mỏng.',
-            imgs: [{
-                label: 'Bề mặt hố thiên thạch',
-                url: 'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/psd/solar-system/mercury/images/mariner_10_first_image_of_mercury_03_23_1974_PIA00437-1920x640.jpg'
-            }, {
-                label: 'Địa hình đồng bằng',
-                url: 'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/psd/solar/2023/09/p/i/a/1/PIA19449-1.jpg'
-            }, {
-                label: 'Vách núi cao',
-                url: 'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/cds/general/images/pia11351/PIA11351~orig.jpg'
-            }, {
-                label: 'Cực băng giá',
-                url: 'https://images--assets-nasa-gov.translate.goog/image/PIA11406/PIA11406~orig.jpg'
-            }]
-        }, {
-            id: 'venus',
-            name: 'Sao Kim',
-            type: 'Hành tinh đá',
-            texture: 'https://www.solarsystemscope.com/textures/download/2k_venus_atmosphere.jpg',
-            color: '#E3BB76',
-            size: 22,
-            dist: 170,
-            orbit: 10,
-            grav: '8.87 m/s²',
-            speed: '35.0 km/s',
-            distance: '108.2 triệu km',
-            period: '225 ngày',
-            icon: 'fas fa-fire',
-            desc: 'Hành tinh nóng nhất với hiệu ứng nhà kính cực mạnh. Áp suất khí quyển gấp 92 lần Trái đất.',
-            details: 'Quay ngược chiều với hầu hết hành tinh khác. Ngày dài hơn năm trên Sao Kim.',
-            imgs: [{
-                label: 'Mây axit sulfuric',
-                url: 'https://assets.science.nasa.gov/dynamicimage/assets/science/cds/general/images/2024/03/venus-mariner-10-pia23791-fig2-16x9-1.jpg'
-            }, {
-                label: 'Núi lửa Maxwell',
-                url: 'https://cdn.nhandan.vn/images/d233c8299c7755bbf317d96e7a85fcf75f6070188da43f3323cd2443503acdaee210728701e3e2bff1a1d4ae187707a2123abe0e69f04437c9cdcaf4359d3bfa/sao_kim_2-1595300126894.jpg'
-            }, {
-                label: 'Bề mặt đá nóng',
-                url: 'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/cds/general/images/pia00271/PIA00271~large.jpg'
-            }, {
-                label: 'Khí quyển dày',
-                url: 'https://science-nasa-gov.translate.goog/wp-content/uploads/2023/05/venus-from-parker-solar-probe.webp'
-            }]
-        }, {
-            id: 'earth',
-            name: 'Trái Đất',
-            type: 'Hành tinh đá',
-            texture: 'https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg',
-            color: '#2271B3',
-            size: 24,
-            dist: 230,
-            orbit: 15,
-            grav: '9.81 m/s²',
-            speed: '29.8 km/s',
-            distance: '149.6 triệu km',
-            period: '365.25 ngày',
-            icon: 'fas fa-globe-americas',
-            desc: 'Hành tinh duy nhất được biết có sự sống. 71% bề mặt là nước, có từ trường bảo vệ.',
-            details: 'Có một vệ tinh tự nhiên là Mặt Trăng. Khí quyển chứa 78% Nitơ, 21% Oxy.',
-            moons: [{
-                name: 'Mặt Trăng',
-                size: 6, // Kích thước nhỏ hơn Trái Đất
-                dist: 45, // Khoảng cách từ tâm Trái Đất
-                orbit: 2, // Tốc độ quay (2 giây 1 vòng)
-                texture: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg'
-            }],
-            imgs: [{
-                label: 'Đại dương xanh',
-                url: 'https://science.nasa.gov/wp-content/uploads/2024/06/eo-pe-iss062e117852.webp'
-            }, {
-                label: 'Rừng nhiệt đới',
-                url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Aerial_view_of_the_Amazon_Rainforest.jpg/500px-Aerial_view_of_the_Amazon_Rainforest.jpg'
-            }, {
-                label: 'Hoang mạc',
-                url: 'https://sudospaces.com/vietchem/2024/05/add-hoang-mac.jpg'
-            }, {
-                label: 'Cực Bắc cực quang',
-                url: 'https://cdn.pixabay.com/animation/2022/10/13/19/47/19-47-21-130_512.gif'
-            }]
+        nav.appendChild(btn);
+    });
+}
 
-        }, {
-            id: 'mars',
-            name: 'Sao Hỏa',
-            type: 'Hành tinh đá',
-            texture: 'https://www.solarsystemscope.com/textures/download/2k_mars.jpg',
-            color: '#E27B58',
-            size: 18,
-            dist: 310,
-            orbit: 22,
-            grav: '3.71 m/s²',
-            speed: '24.1 km/s',
-            distance: '227.9 triệu km',
-            period: '687 ngày',
-            icon: 'fas fa-mountain',
-            desc: 'Hành tinh đỏ với bụi oxit sắt. Có núi lửa lớn nhất hệ mặt trời (Olympus Mons).',
-            details: 'Có 2 vệ tinh: Phobos và Deimos. Từng có nước lỏng trên bề mặt.',
-            moons: [{
-                name: 'Phobos',
-                size: 4,
-                dist: 22,
-                orbit: 1.5,
-                texture: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg'
-            }, {
-                name: 'Deimos',
-                size: 3,
-                dist: 32,
-                orbit: 2.5,
-                texture: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg'
-            }],
-            imgs: [{
-                label: 'Bề mặt đỏ đặc trưng',
-                url: 'https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2021/5/17/909984/Sao-Hoa2.jpeg'
-            }, {
-                label: 'Thung lũng Mariner',
-                url: 'https://ktmt.vnmediacdn.com/images/2021/12/18/42-1639761319-71.jpg'
-            }, {
-                label: 'Cực băng',
-                url: 'https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2021/8/24/945427/Nuoc-Tren-Sao-Hoa.jpg'
-            }, {
-                label: 'Bão bụi toàn cầu',
-                url: 'https://cdn-i.vtcnews.vn/files/ctv.quocte/2017/03/15/4_kvfu-2136.jpg'
-            }]
-        }, {
-            id: 'jupiter',
-            name: 'Sao Mộc',
-            type: 'Hành tinh khí khổng lồ',
-            texture: 'https://www.solarsystemscope.com/textures/download/2k_jupiter.jpg',
-            color: '#D39C7E',
-            size: 48,
-            dist: 420,
-            orbit: 40,
-            grav: '24.79 m/s²',
-            speed: '13.1 km/s',
-            distance: '778.5 triệu km',
-            period: '12 năm',
-            icon: 'fas fa-wind',
-            desc: 'Hành tinh lớn nhất hệ mặt trời. Có Vết Đỏ Lớn - cơn bão tồn tại hàng thế kỷ.',
-            details: 'Có ít nhất 79 vệ tinh. Từ trường mạnh gấp 20.000 lần Trái đất.',
-            moons: [{
-                name: 'Io',
-                size: 5,
-                dist: 55,
-                orbit: 2,
-                texture: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg'
-            }, {
-                name: 'Europa',
-                size: 5,
-                dist: 65,
-                orbit: 3,
-                texture: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg'
-            }, {
-                name: 'Ganymede',
-                size: 7,
-                dist: 78,
-                orbit: 4,
-                texture: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg'
-            }, {
-                name: 'Callisto',
-                size: 6,
-                dist: 92,
-                orbit: 6,
-                texture: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg'
-            }],
-            imgs: [{
-                label: 'Vết Đỏ Lớn',
-                url: 'https://science-nasa-gov.translate.goog/wp-content/uploads/2024/03/jupiter-marble-pia22946-16x9-1.jpg'
-            }, {
-                label: 'Vành đai mây',
-                url: 'https://science.nasa.gov/wp-content/uploads/2024/04/pia02855.gif'
-            }, {
-                label: 'Cực bắc',
-                url: 'https://e.khoahoc.tv/photos/image/2016/07/05/cuc-quang-tren-sao-moc.jpg'
-            }, {
-                label: 'Vệ tinh Europa',
-                url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Europa_in_natural_color.png/500px-Europa_in_natural_color.png'
-            }]
-        }, {
-            id: 'saturn',
-            name: 'Sao Thổ',
-            type: 'Hành tinh khí khổng lồ',
-            texture: 'https://www.solarsystemscope.com/textures/download/2k_saturn.jpg',
-            color: '#C5AB6E',
-            size: 42,
-            dist: 520,
-            orbit: 55,
-            grav: '10.44 m/s²',
-            speed: '9.7 km/s',
-            distance: '1.4 tỷ km',
-            period: '29 năm',
-            icon: 'fas fa-ring',
-            desc: 'Nổi tiếng với hệ vành đai băng giá. Có mật độ thấp nhất trong hệ mặt trời.',
-            details: 'Vành đai chủ yếu là băng và bụi đá. Có ít nhất 82 vệ tinh, lớn nhất là Titan.',
-            hasRings: true,
-            moons: [{
-                name: 'Titan',
-                size: 8,
-                dist: 95,
-                orbit: 5,
-                texture: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg'
-            }],
-            imgs: [{
-                label: 'Vành đai nổi tiếng',
-                url: 'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/cds/general/images/pia17474/PIA17474~large.jpg'
-            }, {
-                label: 'Cực lục giác',
-                url: 'https://images--assets-nasa-gov.translate.goog/image/PIA17175/PIA17175~orig.jpg'
-            }, {
-                label: 'Vệ tinh Titan',
-                url: 'https://assets-science-nasa-gov.translate.goog/dynamicimage/assets/science/psd/solar/2023/09/p/i/a/1/PIA18335.jpg'
-            }, {
-                label: 'Bão cực',
-                url: 'https://assets.science.nasa.gov/content/dam/science/psd/solar/internal_resources/1491/saturn_hexagon_black_and_white.gif'
-            }]
-        }];
+// ===================== INIT SOLAR SYSTEM =====================
+function init() {
+    const rig = document.getElementById('camera-rig');
 
-        let locked = false;
-        let currentScale = 1;
+    planets.forEach(p => {
+        const orbit = document.createElement('div');
+        orbit.className = 'orbit';
+        orbit.style.width = p.dist * 2 + 'px';
+        orbit.style.height = p.dist * 2 + 'px';
+        orbit.style.animationDuration = (p.orbit / speedMultiplier) + 's';
 
-        function init() {
-            const rig = document.getElementById('camera-rig');
-            planets.forEach(p => {
-                // 1. Tạo quỹ đạo hành tinh quanh Mặt Trời
-                const orbit = document.createElement('div');
-                orbit.className = 'orbit';
-                orbit.style.width = p.dist * 2 + 'px';
-                orbit.style.height = p.dist * 2 + 'px';
-                orbit.style.animationDuration = p.orbit + 's';
+        const hitbox = document.createElement('div');
+        hitbox.className = 'planet-hitbox';
+        hitbox.style.width = (p.size + 30) + 'px';
+        hitbox.style.height = (p.size + 30) + 'px';
+        hitbox.dataset.planetId = p.id;
 
-                // 2. Tạo vùng chứa hành tinh (hitbox)
-                const hitbox = document.createElement('div');
-                hitbox.className = 'planet-hitbox';
-                hitbox.style.width = (p.size + 30) + 'px';
-                hitbox.style.height = (p.size + 30) + 'px';
+        const label = document.createElement('div');
+        label.className = 'planet-label';
+        label.textContent = p.name;
+        hitbox.appendChild(label);
 
-                // 3. Tạo nhãn tên
-                const label = document.createElement('div');
-                label.className = 'planet-label';
-                label.textContent = p.name;
-                hitbox.appendChild(label);
+        hitbox.onclick = (e) => { e.stopPropagation(); focusPlanet(hitbox, p); };
 
-                hitbox.onclick = (e) => {
+        const sphere = document.createElement('div');
+        sphere.className = 'planet-sphere';
+        sphere.style.width = p.size + 'px';
+        sphere.style.height = p.size + 'px';
+        sphere.style.backgroundImage = `url('${p.texture}')`;
+        sphere.style.animationDuration = (p.orbit * 2) + 's';
+
+        if (p.moons) {
+            p.moons.forEach(m => {
+                const moonOrbit = document.createElement('div');
+                moonOrbit.className = 'moon-orbit';
+                moonOrbit.style.width = m.dist + 'px';
+                moonOrbit.style.height = m.dist + 'px';
+                moonOrbit.style.animationDuration = m.orbit + 's';
+
+                const moon = document.createElement('div');
+                moon.className = 'moon-sphere';
+                moon.style.width = m.size + 'px';
+                moon.style.height = m.size + 'px';
+                moon.style.backgroundImage = `url('${m.texture}')`;
+                moon.style.backgroundSize = 'cover';
+                moon.title = m.name;
+                moon.onclick = (e) => {
                     e.stopPropagation();
-                    focusPlanet(hitbox, p);
+                    const data = allMoonsData[m.name] || { name: m.name, desc: 'Thông tin đang cập nhật...' };
+                    focusPlanet(moon, data);
                 };
 
-                // 4. Tạo khối cầu hành tinh
-                const sphere = document.createElement('div');
-                sphere.className = 'planet-sphere';
-                sphere.style.width = p.size + 'px';
-                sphere.style.height = p.size + 'px';
-                sphere.style.backgroundImage = `url('${p.texture}')`;
-
-                // 5. THÊM VỆ TINH (Mặt Trăng)
-                if (p.moons) {
-                    p.moons.forEach(m => {
-                        const moonOrbit = document.createElement('div');
-                        moonOrbit.className = 'moon-orbit';
-                        moonOrbit.style.width = m.dist + 'px';
-                        moonOrbit.style.height = m.dist + 'px';
-                        moonOrbit.style.animationDuration = m.orbit + 's';
-
-                        const moon = document.createElement('div');
-                        moon.className = 'moon-sphere';
-                        moon.style.width = m.size + 'px';
-                        moon.style.height = m.size + 'px';
-                        moon.style.backgroundImage = `url('${m.texture}')`;
-                        moon.onclick = (e) => {
-                            e.stopPropagation();
-
-                            // Tìm dữ liệu trong kho allMoonsData theo tên vệ tinh
-                            const specificData = allMoonsData[m.name];
-
-                            if (specificData) {
-                                focusPlanet(moon, specificData);
-                            } else {
-                                // Nếu không có dữ liệu riêng, hiện thông báo cơ bản
-                                focusPlanet(moon, {
-                                    name: m.name,
-                                    desc: 'Thông tin về vệ tinh đang được cập nhật...'
-                                });
-                            }
-                        }
-
-                        moonOrbit.appendChild(moon);
-                        hitbox.appendChild(moonOrbit); // Gắn quỹ đạo mặt trăng vào hành tinh
-                    });
-                }
-
-                // 6. Xử lý vành đai (như Sao Thổ)
-                if (p.hasRings) {
-                    const r = document.createElement('div');
-                    r.className = 'rings';
-                    r.style.width = (p.size * 2.8) + 'px';
-                    r.style.height = (p.size * 2.8) + 'px';
-                    hitbox.appendChild(r);
-                }
-
-                hitbox.appendChild(sphere);
-                orbit.appendChild(hitbox);
-                rig.appendChild(orbit);
+                moonOrbit.appendChild(moon);
+                hitbox.appendChild(moonOrbit);
             });
         }
 
-        function goTo3D() {
-            // hiệu ứng nhẹ trước khi chuyển (optional)
-            document.body.style.opacity = '0';
-
-            setTimeout(() => {
-                window.location.href = 'galaxy_3d.html';
-            }, 300);
+        if (p.hasRings) {
+            const r = document.createElement('div');
+            r.className = 'rings';
+            r.style.width = (p.size * 2.8) + 'px';
+            r.style.height = (p.size * 2.8) + 'px';
+            hitbox.appendChild(r);
         }
 
+        hitbox.appendChild(sphere);
+        orbit.appendChild(hitbox);
+        rig.appendChild(orbit);
+    });
+}
 
-        function pauseOrbits(isPaused) {
-            document.querySelectorAll('.orbit,.moon-orbit').forEach(o => {
-                isPaused ? o.classList.add('paused') : o.classList.remove('paused');
-            });
-        }
+// ===================== FOCUS PLANET =====================
+function focusPlanet(el, data) {
+    locked = true;
+    pauseOrbits(true);
 
-        function focusPlanet(el, data) {
-            locked = true;
-            pauseOrbits(true);
+    const rect = el.getBoundingClientRect();
+    const view = document.getElementById('viewport').getBoundingClientRect();
+    const offsetX = (rect.left + rect.width / 2) - (view.left + view.width / 2);
+    const offsetY = (rect.top + rect.height / 2) - (view.top + view.height / 2);
 
-            const rect = el.getBoundingClientRect();
-            const view = document.getElementById('viewport').getBoundingClientRect();
+    document.getElementById('camera-rig').style.transform =
+        `translate(${-offsetX * 3}px, ${-offsetY * 3}px) scale(3)`;
+    document.getElementById('scaleDisplay').textContent = `Đang xem: ${data.name}`;
 
-            const offsetX = (rect.left + rect.width / 2) - (view.left + view.width / 2);
-            const offsetY = (rect.top + rect.height / 2) - (view.top + view.height / 2);
+    showInfo(data);
 
-            currentScale = 3;
-            document.getElementById('camera-rig').style.transform =
-                `translate(${-offsetX * 3}px, ${-offsetY * 3}px) scale(3)`;
-            document.getElementById('scaleDisplay').textContent = `Tỷ lệ: 1:3.3 tỷ | Đang xem: ${data.name}`;
+    // Update nav button
+    document.querySelectorAll('.planet-nav-btn').forEach(b => b.classList.remove('active-planet'));
+    const navBtn = document.querySelector(`.planet-nav-btn[data-planet="${data.id || ''}"]`);
+    if (navBtn) navBtn.classList.add('active-planet');
 
-            showInfo(data);
-        }
+    activePlanetId = data.id;
+}
 
-        function showInfo(data) {
-            document.getElementById('closeBtn').style.display = 'flex';
-            document.getElementById('default-state').style.display = 'none';
-            document.getElementById('active-data').style.display = 'flex';
+// ===================== SHOW INFO =====================
+function showInfo(data) {
+    document.getElementById('closeBtn').style.display = 'flex';
+    document.getElementById('default-state').style.display = 'none';
+    const activeEl = document.getElementById('active-data');
+    activeEl.style.display = 'flex';
 
-            document.getElementById('p-name').innerText = data.name;
-            document.getElementById('p-type').innerText = data.type;
-            document.getElementById('p-desc').innerText = data.desc;
-            document.getElementById('p-grav').innerText = data.grav;
-            document.getElementById('p-speed').innerText = data.speed;
-            document.getElementById('p-distance').innerText = data.distance;
-            document.getElementById('p-period').innerText = data.period;
-            document.getElementById('p-details').innerText = data.details;
+    // Hero section
+    const heroBg = document.getElementById('hero-bg');
+    const heroPreview = document.getElementById('hero-preview');
+    const bgImg = data.texture || (data.imgs && data.imgs[0] ? data.imgs[0].url : '');
+    heroBg.style.backgroundImage = bgImg ? `url('${bgImg}')` : 'none';
+    heroPreview.style.backgroundImage = bgImg ? `url('${bgImg}')` : `radial-gradient(circle at 35% 35%, ${data.color||'#555'}, #222)`;
 
-            const icon = document.getElementById('p-icon');
-            icon.style.backgroundColor = data.color;
-            icon.innerHTML = `<i class="${data.icon}"></i>`;
+    document.getElementById('p-name').textContent = data.name || '—';
+    document.getElementById('p-type').textContent = data.type || '—';
+    document.getElementById('p-desc').textContent = data.desc || '';
+    document.getElementById('p-grav').textContent = data.grav || '—';
+    document.getElementById('p-speed').textContent = data.speed || '—';
+    document.getElementById('p-distance').textContent = data.distance || '—';
+    document.getElementById('p-period').textContent = data.period || '—';
+    document.getElementById('p-diameter').textContent = data.diameter || '—';
+    document.getElementById('p-moons-count').textContent = data.moonsCount || '0';
+    document.getElementById('p-details').textContent = data.details || '';
 
-            const gall = document.getElementById('gallery');
-            gall.innerHTML = '';
-            data.imgs.forEach(img => {
-                gall.innerHTML += `
-                    <div class="gallery-item">
-                        <img src="${img.url}" alt="${img.label}">
-                        <div class="gallery-label">${img.label}</div>
-                    </div>
-                `;
-            });
-        }
-
-        function resetView() {
-            locked = false;
-            currentScale = 1;
-            document.getElementById('camera-rig').style.transform = 'translate(0px, 0px) scale(1)';
-            document.getElementById('closeBtn').style.display = 'none';
-            document.getElementById('active-data').style.display = 'none';
-            document.getElementById('default-state').style.display = 'flex';
-            document.getElementById('scaleDisplay').textContent = 'Tỷ lệ: 1:10 tỷ';
-            pauseOrbits(false);
-        }
-
-        function focusSun() {
-            const sunData = {
-                name: 'Mặt Trời',
-                type: 'Ngôi sao loại G2V',
-                desc: 'Ngôi sao trung tâm của hệ mặt trời. Cung cấp 99.86% tổng khối lượng của hệ.',
-                grav: '274.0 m/s²',
-                speed: '0 km/s (quay quanh tâm Ngân Hà: 220 km/s)',
-                distance: 'Trung tâm hệ',
-                period: '25-35 ngày (quay không đồng đều)',
-                details: 'Đường kính 1.4 triệu km, nhiệt độ lõi 15 triệu °C, bề mặt 5.500°C.',
-                icon: 'fas fa-sun',
-                color: '#FF9800',
-                imgs: [{
-                    label: 'Bề mặt lửa',
-                    url: 'https://images--assets-nasa-gov.translate.goog/image/GSFC_20171208_Archive_e001936/GSFC_20171208_Archive_e001936~orig.jpg'
-                }, {
-                    label: 'Vết đen Mặt Trời',
-                    url: 'https://images--assets-nasa-gov.translate.goog/image/GSFC_20171208_Archive_e001435/GSFC_20171208_Archive_e001435~large.jpg'
-                }, {
-                    label: 'Nhật hoa',
-                    url: 'https://images--assets-nasa-gov.translate.goog/image/PIA17669/PIA17669~orig.jpg'
-                }, {
-                    label: 'Bùng nổ năng lượng',
-                    url: 'https://science.nasa.gov/wp-content/uploads/2023/05/coronagraph.gif'
-                }]
-            };
-
-            const sunEl = document.querySelector('.sun-sphere');
-            focusPlanet(sunEl, sunData);
-        }
-
-        function acceptDisclaimer() {
-            const overlay = document.getElementById('welcome-overlay');
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                // Có thể thêm nhạc nền hoặc âm thanh khởi động ở đây
-            }, 500);
-        }
-        // Khởi tạo
-        init();
-
-        // Thêm hiệu ứng cho các ngôi sao
-        document.addEventListener('DOMContentLoaded', function() {
-            const stars = document.querySelector('.stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.style.position = 'absolute';
-                star.style.width = Math.random() * 2 + 'px';
-                star.style.height = star.style.width;
-                star.style.background = 'white';
-                star.style.borderRadius = '50%';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.opacity = Math.random() * 0.7 + 0.3;
-                stars.appendChild(star);
-            }
+    // Gallery
+    const gall = document.getElementById('gallery');
+    gall.innerHTML = '';
+    if (data.imgs) {
+        data.imgs.forEach(img => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `<img src="${img.url}" alt="${img.label}" loading="lazy">
+                              <div class="gallery-label">${img.label}</div>`;
+            item.onclick = () => openLightbox(img.url, img.label);
+            gall.appendChild(item);
         });
-    </script>
+    }
 
+    // Facts
+    const factsList = document.getElementById('facts-list');
+    factsList.innerHTML = '';
+    if (data.facts && data.facts.length) {
+        data.facts.forEach((f, i) => {
+            factsList.innerHTML += `<div class="fact-card">
+                <span class="fact-num">FACT ${String(i+1).padStart(2,'0')}</span>
+                ${f}
+            </div>`;
+        });
+    } else {
+        factsList.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">Chưa có dữ liệu.</p>';
+    }
 
-    <footer id="footer">
-        <p>© 2026 vwudev • Galaxy Project</p>
+    // Moons
+    const moonsList = document.getElementById('moons-list');
+    moonsList.innerHTML = '';
+    const moonsArr = data.moons || [];
+    if (moonsArr.length > 0) {
+        moonsArr.forEach(m => {
+            const card = document.createElement('div');
+            card.className = 'moon-card';
+            const mData = allMoonsData[m.name];
+            card.innerHTML = `
+                <div class="moon-avatar" style="background-image:url('${m.texture}');background-size:cover;"></div>
+                <div class="moon-info">
+                    <h4>${m.name}</h4>
+                    <p>${mData ? mData.desc.substring(0, 60) + '...' : 'Vệ tinh tự nhiên'}</p>
+                </div>
+                <i class="fas fa-chevron-right" style="color:var(--text-muted);margin-left:auto;font-size:11px;"></i>
+            `;
+            if (mData) {
+                card.onclick = () => {
+                    showInfo(mData);
+                };
+            }
+            moonsList.appendChild(card);
+        });
+    } else {
+        moonsList.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">Không có vệ tinh tự nhiên.</p>';
+    }
 
-        <div class="footer-social">
-            <a href="https://github.com/vwudev" target="_blank" title="GitHub">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://www.facebook.com/only.vwu" target="_blank" title="Facebook">
-                <i class="fab fa-facebook"></i>
-            </a>
-            <a href="#" target="_blank" title="Linktree">
-                <i class="fas fa-link"></i>
-            </a>
-        </div>
-    </footer>
+    // Reset to first tab
+    switchTab('overview');
+}
 
+// ===================== TABS =====================
+function switchTab(name) {
+    document.querySelectorAll('.panel-tab').forEach((t, i) => {
+        const names = ['overview', 'gallery', 'facts', 'moons'];
+        t.classList.toggle('active-tab', names[i] === name);
+    });
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-content'));
+    const el = document.getElementById('tab-' + name);
+    if (el) el.classList.add('active-content');
+}
+
+// ===================== CONTROLS =====================
+function pauseOrbits(p) {
+    isPaused = p;
+    document.querySelectorAll('.orbit,.moon-orbit').forEach(o => {
+        p ? o.classList.add('paused') : o.classList.remove('paused');
+    });
+    document.getElementById('pauseBtn').classList.toggle('active-btn', p);
+    document.getElementById('playBtn').classList.toggle('active-btn', !p);
+}
+
+function toggleOrbits() {
+    orbitVisible = !orbitVisible;
+    document.querySelectorAll('.orbit').forEach(o => {
+        o.style.borderColor = orbitVisible ? 'var(--orbit-color)' : 'transparent';
+    });
+    document.getElementById('orbitToggleBtn').classList.toggle('active-btn', !orbitVisible);
+}
+
+function toggleNightMode() {
+    nightMode = !nightMode;
+    document.body.style.filter = nightMode ? 'brightness(0.85) saturate(0.8)' : '';
+    document.getElementById('nightBtn').classList.toggle('active-btn', nightMode);
+}
+
+function resetView() {
+    locked = false;
+    document.getElementById('camera-rig').style.transform = 'translate(0,0) scale(1)';
+    document.getElementById('closeBtn').style.display = 'none';
+    document.getElementById('active-data').style.display = 'none';
+    document.getElementById('default-state').style.display = 'flex';
+    document.getElementById('scaleDisplay').textContent = 'Tỷ lệ: 1:10 tỷ';
+    document.querySelectorAll('.planet-nav-btn').forEach(b => b.classList.remove('active-planet'));
+    pauseOrbits(false);
+    activePlanetId = null;
+}
+
+function focusSun() {
+    const sunData = {
+        id: 'sun', name: 'Mặt Trời', type: 'Ngôi sao loại G2V', emoji: '☀️',
+        texture: 'asset/texture/sun.jpg',
+        color: '#FF9800',
+        desc: 'Ngôi sao trung tâm của hệ mặt trời, chiếm 99.86% tổng khối lượng. Nhiệt độ lõi 15 triệu °C, bề mặt 5,500°C. Đường kính 1.4 triệu km.',
+        grav: '274.0 m/s²', speed: '220 km/s*', distance: 'Trung tâm', period: '25-35 ngày**',
+        diameter: '1,392,700 km', moonsCount: '8 hành tinh',
+        icon: 'fas fa-sun', details: '*Quanh tâm Ngân Hà. **Quay không đồng đều theo vĩ độ.',
+        facts:[
+            'Mặt Trời chứa khoảng 99.86% tổng khối lượng của toàn bộ hệ mặt trời.',
+            'Ánh sáng từ Mặt Trời mất 8 phút 20 giây mới đến được Trái Đất.',
+            'Mỗi giây, Mặt Trời biến đổi 600 triệu tấn hydro thành 596 triệu tấn heli qua phản ứng tổng hợp hạt nhân.',
+            'Mặt Trời đã tồn tại khoảng 4.6 tỷ năm và còn sống thêm khoảng 5 tỷ năm nữa.'
+        ],
+        imgs:[
+            { label:'Bề mặt lửa', url:'https://images--assets-nasa-gov.translate.goog/image/GSFC_20171208_Archive_e001936/GSFC_20171208_Archive_e001936~orig.jpg' },
+            { label:'Vết đen Mặt Trời', url:'https://images--assets-nasa-gov.translate.goog/image/GSFC_20171208_Archive_e001435/GSFC_20171208_Archive_e001435~large.jpg' },
+            { label:'Nhật hoa', url:'https://images--assets-nasa-gov.translate.goog/image/PIA17669/PIA17669~orig.jpg' },
+            { label:'Bùng nổ năng lượng', url:'https://science.nasa.gov/wp-content/uploads/2023/05/coronagraph.gif' }
+        ],
+        moons:[]
+    };
+    const sunEl = document.querySelector('.sun-sphere');
+    focusPlanet(sunEl, sunData);
+}
+
+function goTo3D() {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.3s';
+    setTimeout(() => { window.location.href = 'galaxy_3d.html'; }, 300);
+}
+
+// ===================== LIGHTBOX =====================
+function openLightbox(url, alt) {
+    document.getElementById('lightbox-img').src = url;
+    document.getElementById('lightbox-img').alt = alt;
+    document.getElementById('lightbox').classList.add('show');
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('show');
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        closeLightbox();
+        if (locked) resetView();
+    }
+});
+
+// ===================== SPEED SLIDER =====================
+document.getElementById('speedSlider').addEventListener('input', function() {
+    speedMultiplier = parseFloat(this.value);
+    document.getElementById('speedVal').textContent = speedMultiplier.toFixed(1) + '×';
+    document.querySelectorAll('.orbit').forEach((o, i) => {
+        if (planets[i]) o.style.animationDuration = (planets[i].orbit / speedMultiplier) + 's';
+    });
+});
+
+// ===================== DISCLAIMER =====================
+function acceptDisclaimer() {
+    const overlay = document.getElementById('welcome-overlay');
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.style.display = 'none', 500);
+}
+
+// ===================== BOOT =====================
+drawStars();
+buildPlanetNav();
+init();
+</script>
 
 </body>
-
 </html>
