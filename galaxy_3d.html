@@ -3,13 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA 3D Cosmic Explorer v3.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NASA 3D Cosmic Explorer v4.0</title>
     <style>
-        /* ===== GIỮ NGUYÊN CSS TỪ BẢN TRƯỚC ===== */
         :root {
             --nasa-blue: #00e5ff;
             --glass-bg: rgba(255, 255, 255, 0.05);
+            --danger: #ff4757;
+            --success: #2ed573;
+            --warning: #ffa502;
+            --purple: #a855f7;
         }
         * {
             margin: 0;
@@ -35,26 +38,56 @@
             border: 1px solid rgba(0, 229, 255, 0.3);
             backdrop-filter: blur(20px);
             width: 280px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
             box-shadow: 0 0 40px rgba(0, 229, 255, 0.1);
             transition: 0.3s;
         }
+        #ui-container::-webkit-scrollbar { width: 5px; }
+        #ui-container::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.4); border-radius: 10px; }
         #ui-container:hover {
             border-color: var(--nasa-blue);
             box-shadow: 0 0 60px rgba(0, 229, 255, 0.2);
+        }
+        .ui-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+            padding-bottom: 12px;
+            margin-bottom: 18px;
         }
         h3 {
             font-weight: 300;
             letter-spacing: 4px;
             color: var(--nasa-blue);
-            border-bottom: 1px solid rgba(0, 229, 255, 0.2);
-            padding-bottom: 12px;
-            margin-bottom: 20px;
             font-size: 18px;
             text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
         }
-        .control-group {
-            margin-bottom: 18px;
+        .collapse-btn {
+            background: none;
+            border: none;
+            color: var(--nasa-blue);
+            font-size: 15px;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: 0.2s;
+            flex-shrink: 0;
         }
+        .collapse-btn:hover { transform: scale(1.25); }
+        #ui-container.collapsed .control-group,
+        #ui-container.collapsed .quick-nav,
+        #ui-container.collapsed .btn-stack,
+        #ui-container.collapsed .icon-toggle-row,
+        #ui-container.collapsed .section-label { display: none; }
+        .section-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 14px 0 8px;
+        }
+        .control-group { margin-bottom: 18px; }
         label {
             display: block;
             font-size: 11px;
@@ -79,6 +112,30 @@
             background: var(--nasa-blue);
             cursor: pointer;
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+        }
+        .quick-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .chip {
+            padding: 5px 10px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            background: rgba(0, 229, 255, 0.05);
+            color: var(--nasa-blue);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.25s;
+            white-space: nowrap;
+        }
+        .chip:hover { background: rgba(0, 229, 255, 0.15); }
+        .chip.active {
+            background: var(--nasa-blue);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
         }
         .btn-stack {
             display: flex;
@@ -112,46 +169,45 @@
             background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.1), transparent);
             transition: left 0.5s;
         }
-        .btn:hover::before {
-            left: 100%;
-        }
+        .btn:hover::before { left: 100%; }
         .btn:hover {
             background: var(--nasa-blue);
             color: #000;
             box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
             transform: translateY(-2px);
         }
-        .btn-danger {
-            border-color: #ff4757 !important;
-            color: #ff4757 !important;
+        .btn-danger { border-color: var(--danger) !important; color: var(--danger) !important; }
+        .btn-danger:hover { background: var(--danger) !important; color: #000 !important; }
+        .btn-success { border-color: var(--success) !important; color: var(--success) !important; }
+        .btn-success:hover { background: var(--success) !important; color: #000 !important; }
+        .btn-warning { border-color: var(--warning) !important; color: var(--warning) !important; }
+        .btn-warning:hover { background: var(--warning) !important; color: #000 !important; }
+        .btn-purple { border-color: var(--purple) !important; color: var(--purple) !important; }
+        .btn-purple:hover { background: var(--purple) !important; color: #000 !important; }
+        .icon-toggle-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+            flex-wrap: wrap;
         }
-        .btn-danger:hover {
-            background: #ff4757 !important;
-            color: #000 !important;
+        .icon-btn {
+            flex: 1;
+            min-width: 42px;
+            padding: 10px 0;
+            text-align: center;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            background: rgba(0, 229, 255, 0.05);
+            color: var(--nasa-blue);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
         }
-        .btn-success {
-            border-color: #2ed573 !important;
-            color: #2ed573 !important;
-        }
-        .btn-success:hover {
-            background: #2ed573 !important;
-            color: #000 !important;
-        }
-        .btn-warning {
-            border-color: #ffa502 !important;
-            color: #ffa502 !important;
-        }
-        .btn-warning:hover {
-            background: #ffa502 !important;
-            color: #000 !important;
-        }
-        .btn-purple {
-            border-color: #a855f7 !important;
-            color: #a855f7 !important;
-        }
-        .btn-purple:hover {
-            background: #a855f7 !important;
-            color: #000 !important;
+        .icon-btn:hover { background: rgba(0, 229, 255, 0.15); transform: translateY(-2px); }
+        .icon-btn.active {
+            background: var(--nasa-blue);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
         }
         #info-panel {
             position: absolute;
@@ -166,18 +222,10 @@
             display: none;
             width: 320px;
             border: 1px solid rgba(0, 229, 255, 0.2);
+            animation: slideUp 0.35s ease-out;
         }
-        #info-panel h2 {
-            font-weight: 300;
-            font-size: 24px;
-            letter-spacing: 2px;
-        }
-        #info-panel p {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #adbac7;
-            margin: 10px 0 15px 0;
-        }
+        #info-panel h2 { font-weight: 300; font-size: 24px; letter-spacing: 2px; }
+        #info-panel p { font-size: 14px; line-height: 1.8; color: #adbac7; margin: 10px 0 15px 0; }
         #stats-panel {
             position: absolute;
             top: 20px;
@@ -192,14 +240,8 @@
             width: 220px;
             display: none;
         }
-        #stats-panel p {
-            margin: 6px 0;
-            line-height: 1.6;
-            color: #adbac7;
-        }
-        #stats-panel strong {
-            color: var(--nasa-blue);
-        }
+        #stats-panel p { margin: 6px 0; line-height: 1.6; color: #adbac7; }
+        #stats-panel strong { color: var(--nasa-blue); }
         #loading {
             position: absolute;
             inset: 0;
@@ -221,23 +263,28 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        #load-text {
-            margin-top: 30px;
-            letter-spacing: 4px;
-            font-size: 14px;
-            opacity: 0.8;
+        .progress-track {
+            width: 220px;
+            height: 4px;
+            background: rgba(0, 229, 255, 0.15);
+            border-radius: 2px;
+            margin-top: 26px;
+            overflow: hidden;
         }
-        #creator-info-icon {
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--nasa-blue);
+            box-shadow: 0 0 10px var(--nasa-blue);
+            transition: width 0.25s ease;
+        }
+        #load-text { margin-top: 14px; letter-spacing: 4px; font-size: 14px; opacity: 0.8; }
+        #creator-info-icon, #help-icon {
             position: absolute;
             bottom: 25px;
-            right: 25px;
             width: 45px;
             height: 45px;
             background: var(--glass-bg);
@@ -247,8 +294,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Georgia', serif;
-            font-style: italic;
             font-weight: bold;
             cursor: pointer;
             z-index: 1001;
@@ -256,16 +301,17 @@
             box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
             backdrop-filter: blur(10px);
         }
-        #creator-info-icon:hover {
+        #creator-info-icon { right: 25px; font-family: 'Georgia', serif; font-style: italic; }
+        #help-icon { left: 25px; font-size: 18px; }
+        #creator-info-icon:hover, #help-icon:hover {
             background: var(--nasa-blue);
             color: #000;
             box-shadow: 0 0 40px var(--nasa-blue);
-            transform: scale(1.1) rotate(360deg);
+            transform: scale(1.1);
         }
-        #creator-card {
+        #creator-card, #help-panel {
             position: absolute;
             bottom: 85px;
-            right: 25px;
             width: 300px;
             background: var(--glass-bg);
             border: 1px solid rgba(0, 229, 255, 0.2);
@@ -278,15 +324,11 @@
             animation: slideUp 0.4s ease-out;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         }
+        #creator-card { right: 25px; }
+        #help-panel { left: 25px; width: 280px; }
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .creator-avatar {
             width: 70px;
@@ -299,26 +341,10 @@
             background-position: center;
             flex-shrink: 0;
         }
-        #creator-card h4 {
-            margin: 0;
-            color: var(--nasa-blue);
-            font-weight: 300;
-            letter-spacing: 2px;
-        }
-        #creator-card .subtitle {
-            margin: 0;
-            font-size: 10px;
-            letter-spacing: 2px;
-            color: #adbac7;
-        }
-        #creator-card .content {
-            font-size: 13px;
-            color: #adbac7;
-            line-height: 1.8;
-        }
-        #creator-card .content strong {
-            color: #fff;
-        }
+        #creator-card h4, #help-panel h4 { margin: 0; color: var(--nasa-blue); font-weight: 300; letter-spacing: 2px; }
+        #creator-card .subtitle { margin: 0; font-size: 10px; letter-spacing: 2px; color: #adbac7; }
+        #creator-card .content { font-size: 13px; color: #adbac7; line-height: 1.8; }
+        #creator-card .content strong { color: #fff; }
         #creator-card .quote {
             border-top: 1px solid rgba(0, 229, 255, 0.15);
             padding-top: 12px;
@@ -326,13 +352,33 @@
             font-style: italic;
             color: #c8d0d9;
         }
+        #help-panel h4 { margin-bottom: 14px; }
+        .shortcut-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #adbac7;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .shortcut-row:last-child { border-bottom: none; }
+        kbd {
+            background: rgba(0, 229, 255, 0.12);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 5px;
+            padding: 2px 7px;
+            color: var(--nasa-blue);
+            font-size: 11px;
+            font-family: inherit;
+        }
         #meteor-alert {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 200;
-            color: #ff4757;
+            color: var(--danger);
             font-size: 42px;
             font-weight: bold;
             text-shadow: 0 0 60px rgba(255, 71, 87, 0.5);
@@ -340,10 +386,9 @@
             pointer-events: none;
             transition: opacity 0.5s;
             letter-spacing: 6px;
+            text-align: center;
         }
-        #meteor-alert.show {
-            opacity: 1;
-        }
+        #meteor-alert.show { opacity: 1; }
         #notification {
             position: absolute;
             bottom: 100px;
@@ -362,9 +407,47 @@
             transition: 0.5s;
             pointer-events: none;
             white-space: nowrap;
+            max-width: 90vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        #notification.show {
-            opacity: 1;
+        #notification.show { opacity: 1; }
+        #touch-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: none;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 20px;
+            z-index: 150;
+            pointer-events: none;
+        }
+        .touch-pad { display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: auto; }
+        .touch-row { display: flex; gap: 6px; }
+        .touch-btn {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: rgba(0, 229, 255, 0.12);
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            color: var(--nasa-blue);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            touch-action: none;
+            user-select: none;
+        }
+        .touch-btn:active { background: var(--nasa-blue); color: #000; }
+        .touch-meteor {
+            align-self: flex-end;
+            background: rgba(255, 71, 87, 0.15);
+            border-color: var(--danger);
+            color: var(--danger);
+            pointer-events: auto;
         }
         /* Development Panel */
         #dev-panel {
@@ -378,18 +461,10 @@
             backdrop-filter: blur(8px);
             animation: fadeIn 0.5s;
         }
-        #dev-panel.active {
-            display: flex;
-        }
+        #dev-panel.active { display: flex; }
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
         .dev-content {
             background: #0b1a2a;
@@ -403,13 +478,8 @@
             box-shadow: 0 0 80px rgba(0, 229, 255, 0.15);
             position: relative;
         }
-        .dev-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        .dev-content::-webkit-scrollbar-thumb {
-            background: var(--nasa-blue);
-            border-radius: 10px;
-        }
+        .dev-content::-webkit-scrollbar { width: 6px; }
+        .dev-content::-webkit-scrollbar-thumb { background: var(--nasa-blue); border-radius: 10px; }
         .dev-header {
             display: flex;
             justify-content: space-between;
@@ -418,27 +488,10 @@
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
-        .dev-header h2 {
-            font-weight: 300;
-            letter-spacing: 2px;
-            color: var(--nasa-blue);
-        }
-        .dev-close {
-            background: none;
-            border: none;
-            color: #ff4757;
-            font-size: 28px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .dev-close:hover {
-            transform: rotate(90deg);
-        }
-        .dev-timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
+        .dev-header h2 { font-weight: 300; letter-spacing: 2px; color: var(--nasa-blue); }
+        .dev-close { background: none; border: none; color: var(--danger); font-size: 28px; cursor: pointer; transition: 0.3s; }
+        .dev-close:hover { transform: rotate(90deg); }
+        .dev-timeline { display: flex; flex-direction: column; gap: 18px; }
         .dev-item {
             display: flex;
             gap: 20px;
@@ -448,24 +501,10 @@
             border-left: 4px solid var(--nasa-blue);
             transition: 0.3s;
         }
-        .dev-item:hover {
-            background: rgba(0, 229, 255, 0.05);
-            transform: translateX(6px);
-        }
-        .dev-item .year {
-            font-weight: bold;
-            color: var(--nasa-blue);
-            min-width: 100px;
-            font-size: 16px;
-        }
-        .dev-item .desc {
-            color: #c8d0d9;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .dev-item .desc strong {
-            color: #fff;
-        }
+        .dev-item:hover { background: rgba(0, 229, 255, 0.05); transform: translateX(6px); }
+        .dev-item .year { font-weight: bold; color: var(--nasa-blue); min-width: 100px; font-size: 16px; }
+        .dev-item .desc { color: #c8d0d9; font-size: 14px; line-height: 1.6; }
+        .dev-item .desc strong { color: #fff; }
         .dev-media {
             margin-top: 24px;
             border-radius: 16px;
@@ -477,60 +516,20 @@
             align-items: center;
             justify-content: center;
         }
-        .dev-media .placeholder {
-            color: #555;
-            font-size: 18px;
-            letter-spacing: 2px;
-            text-align: center;
-            padding: 20px;
-        }
-        .dev-media .placeholder span {
-            color: var(--nasa-blue);
-        }
+        .dev-media .placeholder { color: #555; font-size: 18px; letter-spacing: 2px; text-align: center; padding: 20px; }
+        .dev-media .placeholder span { color: var(--nasa-blue); }
         @media (max-width: 768px) {
-            #ui-container {
-                width: 220px;
-                padding: 18px;
-                top: 10px;
-                left: 10px;
-            }
-            #stats-panel {
-                width: 180px;
-                padding: 12px 16px;
-                top: 10px;
-                right: 10px;
-                font-size: 11px;
-            }
-            #info-panel {
-                width: 260px;
-                padding: 18px;
-                bottom: 15px;
-                left: 15px;
-            }
-            #creator-card {
-                width: 260px;
-                right: 15px;
-                bottom: 75px;
-                padding: 18px;
-            }
-            .dev-content {
-                padding: 18px;
-            }
-            .dev-item {
-                flex-direction: column;
-                gap: 6px;
-            }
-            .dev-item .year {
-                min-width: auto;
-            }
-            #meteor-alert {
-                font-size: 28px;
-            }
-            #notification {
-                font-size: 12px;
-                padding: 10px 20px;
-                bottom: 80px;
-            }
+            #ui-container { width: 220px; padding: 18px; top: 10px; left: 10px; max-height: calc(100vh - 20px); }
+            #stats-panel { width: 170px; padding: 12px 16px; top: 10px; right: 10px; font-size: 11px; }
+            #info-panel { width: 260px; padding: 18px; bottom: 15px; left: 15px; }
+            #creator-card { width: 260px; right: 15px; bottom: 75px; padding: 18px; }
+            #help-panel { width: 240px; left: 15px; bottom: 75px; padding: 18px; }
+            .dev-content { padding: 18px; }
+            .dev-item { flex-direction: column; gap: 6px; }
+            .dev-item .year { min-width: auto; }
+            #meteor-alert { font-size: 26px; }
+            #notification { font-size: 12px; padding: 10px 20px; bottom: 80px; }
+            .touch-btn { width: 46px; height: 46px; font-size: 17px; }
         }
     </style>
 </head>
@@ -540,6 +539,7 @@
     <!-- Loading -->
     <div id="loading">
         <div class="loader-ring"></div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
         <p id="load-text">SYNCHRONIZING WITH SATELLITE...</p>
     </div>
 
@@ -563,13 +563,35 @@
         </div>
     </div>
 
+    <!-- Help -->
+    <div id="help-icon">?</div>
+    <div id="help-panel">
+        <h4>⌨ PHÍM TẮT</h4>
+        <div class="shortcut-row"><span>Chọn hành tinh</span><kbd>Click</kbd></div>
+        <div class="shortcut-row"><span>Chuyển nhanh hành tinh</span><kbd>1-8</kbd></div>
+        <div class="shortcut-row"><span>Di chuyển (chế độ bay)</span><kbd>WASD</kbd></div>
+        <div class="shortcut-row"><span>Gọi thiên thạch</span><kbd>Space</kbd></div>
+        <div class="shortcut-row"><span>Ẩn/hiện nhãn</span><kbd>L</kbd></div>
+        <div class="shortcut-row"><span>Ẩn/hiện quỹ đạo</span><kbd>O</kbd></div>
+        <div class="shortcut-row"><span>Toàn màn hình</span><kbd>F</kbd></div>
+        <div class="shortcut-row"><span>Trợ giúp</span><kbd>H</kbd></div>
+    </div>
+
     <!-- UI -->
     <div id="ui-container">
-        <h3>🚀 COSMIC EXPLORER</h3>
+        <div class="ui-header">
+            <h3>🚀 COSMIC EXPLORER</h3>
+            <button class="collapse-btn" id="uiCollapseBtn" title="Thu gọn">▾</button>
+        </div>
+
         <div class="control-group">
             <label id="speedLabel">⏱ Tốc độ thời gian: 1.0x</label>
             <input type="range" id="speedRange" min="0" max="5" step="0.1" value="1">
         </div>
+
+        <div class="section-label">Chuyển nhanh đến hành tinh</div>
+        <div class="quick-nav" id="quickNav"></div>
+
         <div class="btn-stack">
             <button class="btn" id="pauseBtn">⏸ Dừng mô phỏng</button>
             <button class="btn" id="resetCamBtn">🎯 Reset Camera</button>
@@ -578,6 +600,15 @@
             <button class="btn btn-success" id="toggleAudioBtn">🔊 Âm thanh (OFF)</button>
             <button class="btn btn-danger" id="meteorBtn">☄️ Kích hoạt thiên thạch</button>
             <button class="btn btn-purple" id="devBtn">🌱 Theo dõi sự phát triển</button>
+        </div>
+
+        <div class="section-label">Hiển thị &amp; tiện ích</div>
+        <div class="icon-toggle-row">
+            <button class="icon-btn active" id="toggleLabelsBtn" title="Ẩn/hiện nhãn (L)">🏷️</button>
+            <button class="icon-btn active" id="toggleOrbitsBtn" title="Ẩn/hiện quỹ đạo (O)">🛰️</button>
+            <button class="icon-btn" id="statsToggleBtn" title="Bảng thống kê">📊</button>
+            <button class="icon-btn" id="fullscreenBtn" title="Toàn màn hình (F)">⛶</button>
+            <button class="icon-btn" id="screenshotBtn" title="Chụp ảnh màn hình">📸</button>
         </div>
     </div>
 
@@ -594,11 +625,25 @@
         <p><strong>🚀 Tốc độ:</strong> <span id="flight-speed">0.0 km/s</span></p>
         <p><strong>📏 Khoảng cách:</strong> <span id="tracked-distance">N/A</span></p>
         <p><strong>📅 Ngày/Giờ:</strong> <span id="sim-datetime">N/A</span></p>
+        <p><strong>🎞️ FPS:</strong> <span id="fps-counter">0</span></p>
     </div>
 
     <!-- Alerts -->
     <div id="meteor-alert">☄️ THIÊN THẠCH ĐANG ĐẾN!</div>
     <div id="notification">🌍 Thiên thạch đã bị bầu khí quyển ngăn chặn!</div>
+
+    <!-- Touch controls (mobile flight mode) -->
+    <div id="touch-controls">
+        <div class="touch-pad">
+            <button class="touch-btn" id="touchForward">▲</button>
+            <div class="touch-row">
+                <button class="touch-btn" id="touchLeft">◀</button>
+                <button class="touch-btn" id="touchBack">▼</button>
+                <button class="touch-btn" id="touchRight">▶</button>
+            </div>
+        </div>
+        <button class="touch-btn touch-meteor" id="touchMeteor">☄️</button>
+    </div>
 
     <!-- Development Panel -->
     <div id="dev-panel">
@@ -625,14 +670,17 @@
     </div>
 
     <!-- ===== THREE.JS ===== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
 
     <script>
+        // ================================================================
+        //  HELPERS
+        // ================================================================
+        const $ = (id) => document.getElementById(id);
+        const on = (id, evt, fn, opts) => { const el = $(id); if (el) el.addEventListener(evt, fn, opts); };
+
         // ================================================================
         //  CONFIG & STATE
         // ================================================================
@@ -642,14 +690,19 @@
             trackedPlanet: null,
             isFlightMode: false,
             isPointerLocked: false,
-            meteorActive: false,
             isAudioPlaying: false,
+            showLabels: true,
+            showOrbits: true,
+            showStats: false,
             simTime: new Date(),
             velocity: new THREE.Vector3(),
             moveForward: false,
             moveBackward: false,
             moveLeft: false,
             moveRight: false,
+            cameraFocusTarget: null,
+            frameCount: 0,
+            lastFpsTime: 0,
         };
 
         const CONFIG = {
@@ -657,6 +710,7 @@
             meteorSpeedBase: 100,
             meteorSpeedRange: 80,
             asteroidCount: 8000,
+            isTouchDevice: 'ontouchstart' in window,
         };
 
         // ================================================================
@@ -666,7 +720,7 @@
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 15000);
         camera.position.set(0, 400, 900);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
@@ -684,21 +738,20 @@
         const pointerLockControls = new THREE.PointerLockControls(camera, document.body);
 
         const loader = new THREE.TextureLoader();
-        let texturesToLoad = 0,
-            texturesLoaded = 0;
+        let texturesToLoad = 0, texturesLoaded = 0;
 
         function loadAsset(path) {
             texturesToLoad++;
-            return loader.load(path, () => { texturesLoaded++;
-                updateLoading(); }, undefined, () => { texturesLoaded++;
-                updateLoading(); });
+            return loader.load(path, () => { texturesLoaded++; updateLoading(); }, undefined, () => { texturesLoaded++; updateLoading(); });
         }
 
         function updateLoading() {
-            const perc = Math.round((texturesLoaded / texturesToLoad) * 100);
-            document.getElementById('load-text').innerText = `LOADING CORE ASSETS: ${perc}%`;
+            const perc = texturesToLoad ? Math.round((texturesLoaded / texturesToLoad) * 100) : 100;
+            $('load-text').innerText = `LOADING CORE ASSETS: ${perc}%`;
+            const fill = $('progressFill');
+            if (fill) fill.style.width = perc + '%';
             if (texturesLoaded >= texturesToLoad) {
-                setTimeout(() => document.getElementById('loading').style.display = 'none', 800);
+                setTimeout(() => $('loading').style.display = 'none', 800);
             }
         }
 
@@ -755,7 +808,7 @@
         sun.add(glowSprite);
 
         // ================================================================
-        //  HELPERS
+        //  HELPERS: LABEL
         // ================================================================
         function createTextLabel(text, color = '#00e5ff', size = 36) {
             const canvas = document.createElement('canvas');
@@ -777,159 +830,99 @@
         }
 
         // ================================================================
-        //  ADVANCED ATMOSPHERE SHADER (Rayleigh Scattering + Rim Glow)
+        //  ATMOSPHERE SHADER (Rayleigh Scattering + Rim Glow)
+        //  Nguồn shader dùng chung, tránh lặp code cho từng lớp khí quyển.
         // ================================================================
-        const atmosphereShader = {
-            uniforms: {
-                viewVector: { value: camera.position },
-                glowColor: { value: new THREE.Color(0x4da6ff) },
-                rimColor: { value: new THREE.Color(0xff8844) },
-                intensity: { value: 0.8 },
-                power: { value: 3.5 },
-            },
-            vertexShader: `
-                uniform vec3 viewVector;
-                uniform float intensity;
-                uniform float power;
-                varying float vIntensity;
-                void main() {
-                    vec3 vNormal = normalize(normalMatrix * normal);
-                    vec3 vView = normalize(normalMatrix * viewVector);
-                    float rim = 1.0 - max(0.0, dot(vNormal, vView));
-                    vIntensity = pow(rim, power) * intensity;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform vec3 glowColor;
-                uniform vec3 rimColor;
-                varying float vIntensity;
-                void main() {
-                    // Mix giữa màu xanh dương (tán xạ) và màu cam ở rìa
-                    vec3 color = mix(glowColor, rimColor, vIntensity * 0.8);
-                    gl_FragColor = vec4(color, vIntensity * 0.9);
-                }
-            `,
-            side: THREE.FrontSide,
-            blending: THREE.AdditiveBlending,
-            transparent: true,
-            depthWrite: false,
-        };
+        const ATMOSPHERE_VERTEX = `
+            uniform vec3 viewVector;
+            uniform float intensity;
+            uniform float power;
+            varying float vIntensity;
+            void main() {
+                vec3 vNormal = normalize(normalMatrix * normal);
+                vec3 vView = normalize(normalMatrix * viewVector);
+                float rim = 1.0 - max(0.0, dot(vNormal, vView));
+                vIntensity = pow(rim, power) * intensity;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+        const ATMOSPHERE_FRAGMENT = `
+            uniform vec3 glowColor;
+            uniform vec3 rimColor;
+            varying float vIntensity;
+            void main() {
+                vec3 color = mix(glowColor, rimColor, vIntensity * 0.6);
+                gl_FragColor = vec4(color, vIntensity * 0.85);
+            }
+        `;
 
-        function createAtmosphere(radius, color = 0x4da6ff) {
+        function createAtmosphere(radius, color = 0x4da6ff, intensity = 0.9, power = 4.0) {
             const mat = new THREE.ShaderMaterial({
                 uniforms: {
                     viewVector: { value: camera.position },
                     glowColor: { value: new THREE.Color(color) },
                     rimColor: { value: new THREE.Color(0xff8844) },
-                    intensity: { value: 0.9 },
-                    power: { value: 4.0 },
+                    intensity: { value: intensity },
+                    power: { value: power },
                 },
-                vertexShader: `
-                    uniform vec3 viewVector;
-                    uniform float intensity;
-                    uniform float power;
-                    varying float vIntensity;
-                    void main() {
-                        vec3 vNormal = normalize(normalMatrix * normal);
-                        vec3 vView = normalize(normalMatrix * viewVector);
-                        float rim = 1.0 - max(0.0, dot(vNormal, vView));
-                        vIntensity = pow(rim, power) * intensity;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 glowColor;
-                    uniform vec3 rimColor;
-                    varying float vIntensity;
-                    void main() {
-                        vec3 color = mix(glowColor, rimColor, vIntensity * 0.6);
-                        gl_FragColor = vec4(color, vIntensity * 0.85);
-                    }
-                `,
+                vertexShader: ATMOSPHERE_VERTEX,
+                fragmentShader: ATMOSPHERE_FRAGMENT,
                 side: THREE.FrontSide,
                 blending: THREE.AdditiveBlending,
                 transparent: true,
                 depthWrite: false,
             });
-            const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 64, 64), mat);
-            return mesh;
+            return new THREE.Mesh(new THREE.SphereGeometry(radius, 64, 64), mat);
         }
 
         // ================================================================
         //  PLANETS
         // ================================================================
         const planetData = [{
-            name: 'Sao Thủy',
-            size: 4,
-            dist: 80,
-            speed: 0.02,
+            name: 'Sao Thủy', size: 4, dist: 80, speed: 0.02,
             tex: 'asset/texture/mercury.jpg',
             info: '🔴 Gần Mặt Trời nhất, nhiệt độ cực đoan: -180°C đến 430°C.',
             color: '#b0b0b0'
         }, {
-            name: 'Sao Kim',
-            size: 7,
-            dist: 120,
-            speed: 0.015,
+            name: 'Sao Kim', size: 7, dist: 120, speed: 0.015,
             tex: 'asset/texture/venus.jpg',
             info: '🟡 Bầu khí quyển CO₂ dày đặc, nhiệt độ trung bình 465°C.',
             color: '#e8cda0'
         }, {
-            name: 'Trái Đất',
-            size: 8,
-            dist: 170,
-            speed: 0.01,
+            name: 'Trái Đất', size: 8, dist: 170, speed: 0.01,
             tex: 'asset/texture/earth.jpg',
             info: '🌍 Hành tinh xanh, nơi duy nhất biết có sự sống.',
-            color: '#4d9de0',
-            hasMoon: true,
-            hasAtmosphere: true,
-            atmosphereColor: 0x4da6ff,
+            color: '#4d9de0', hasMoon: true, hasAtmosphere: true, atmosphereColor: 0x4da6ff,
         }, {
-            name: 'Sao Hỏa',
-            size: 6,
-            dist: 220,
-            speed: 0.008,
+            name: 'Sao Hỏa', size: 6, dist: 220, speed: 0.008,
             tex: 'asset/texture/mars.jpg',
             info: '🔴 Hành tinh Đỏ với ngọn núi lửa Olympus Mons cao 21.9 km.',
             color: '#c1440e'
         }, {
-            name: 'Sao Mộc',
-            size: 20,
-            dist: 310,
-            speed: 0.004,
+            name: 'Sao Mộc', size: 20, dist: 310, speed: 0.004,
             tex: 'asset/texture/jupiter.jpg',
             info: '🟠 Khổng lồ khí với hơn 95 mặt trăng, bão đỏ tồn tại hàng thế kỷ.',
             color: '#d4a06a'
         }, {
-            name: 'Sao Thổ',
-            size: 17,
-            dist: 420,
-            speed: 0.002,
+            name: 'Sao Thổ', size: 17, dist: 420, speed: 0.002,
             tex: 'asset/texture/saturn.jpg',
             info: '🟡 Sở hữu vành đai băng lộng lẫy, mật độ thấp hơn nước.',
-            color: '#e8d5a3',
-            hasRings: true
+            color: '#e8d5a3', hasRings: true
         }, {
-            name: 'Sao Thiên Vương',
-            size: 12,
-            dist: 530,
-            speed: 0.0014,
+            name: 'Sao Thiên Vương', size: 12, dist: 530, speed: 0.0014,
             tex: 'asset/texture/uranus.jpg',
             info: '🔵 Hành tinh băng khổng lồ, trục quay nghiêng 98°.',
             color: '#7ec8e3'
         }, {
-            name: 'Sao Hải Vương',
-            size: 11,
-            dist: 620,
-            speed: 0.001,
+            name: 'Sao Hải Vương', size: 11, dist: 620, speed: 0.001,
             tex: 'asset/texture/neptune.jpg',
             info: '🔵 Hành tinh xa nhất, gió mạnh nhất hệ Mặt Trời lên tới 2.100 km/h.',
             color: '#3b5ba5'
         }];
 
         const planetMeshes = [];
+        const labelSprites = [];
+        const orbitLineMeshes = [];
         let moonObj = null;
         let earthMesh = null;
 
@@ -948,7 +941,7 @@
             mesh.position.x = p.dist;
             mesh.castShadow = true;
             mesh.receiveShadow = true;
-            mesh.userData = { name: p.name, info: p.info };
+            mesh.userData = { name: p.name, info: p.info, radius: p.size };
             orbitGroup.add(mesh);
 
             if (p.name === 'Trái Đất') earthMesh = mesh;
@@ -956,6 +949,7 @@
             const label = createTextLabel(p.name, p.color);
             label.position.y = p.size + 12;
             mesh.add(label);
+            labelSprites.push(label);
 
             // Moon
             if (p.hasMoon) {
@@ -969,8 +963,7 @@
                 moonGroup.add(moonMesh);
                 const orbitRing = new THREE.Mesh(
                     new THREE.RingGeometry(17.5, 18.5, 64),
-                    new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.15, transparent: true, side: THREE
-                            .DoubleSide })
+                    new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.15, transparent: true, side: THREE.DoubleSide })
                 );
                 orbitRing.rotation.x = Math.PI / 2;
                 mesh.add(orbitRing);
@@ -982,32 +975,28 @@
                 const ringTex = loadAsset('asset/texture/ring.jpg');
                 const ring = new THREE.Mesh(
                     new THREE.RingGeometry(p.size + 5, p.size + 28, 80),
-                    new THREE.MeshPhongMaterial({ map: ringTex, transparent: true, side: THREE.DoubleSide,
-                        opacity: 0.8 })
+                    new THREE.MeshPhongMaterial({ map: ringTex, transparent: true, side: THREE.DoubleSide, opacity: 0.8 })
                 );
                 ring.rotation.x = Math.PI / 2.3;
                 mesh.add(ring);
             }
 
-            // Atmosphere (Earth only - advanced)
+            // Atmosphere (Earth only - advanced, 2 lớp: gần + rim glow ngoài)
             if (p.hasAtmosphere) {
-                const atm = createAtmosphere(p.size * 1.12, p.atmosphereColor || 0x4da6ff);
+                const atm = createAtmosphere(p.size * 1.12, p.atmosphereColor || 0x4da6ff, 0.9, 4.0);
                 mesh.add(atm);
-                // Thêm layer ngoài mờ hơn để tạo hiệu ứng glow
-                const outerAtm = createAtmosphere(p.size * 1.25, 0x88bbff);
-                outerAtm.material.uniforms.intensity.value = 0.4;
-                outerAtm.material.uniforms.power.value = 5.0;
+                const outerAtm = createAtmosphere(p.size * 1.25, 0x88bbff, 0.4, 5.0);
                 mesh.add(outerAtm);
             }
 
             // Orbit line
             const orbitLine = new THREE.Mesh(
                 new THREE.RingGeometry(p.dist - 0.6, p.dist + 0.6, 128),
-                new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.08, side: THREE
-                        .DoubleSide })
+                new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.08, side: THREE.DoubleSide })
             );
             orbitLine.rotation.x = Math.PI / 2;
             scene.add(orbitLine);
+            orbitLineMeshes.push(orbitLine);
 
             planetMeshes.push({ group: orbitGroup, mesh: mesh, speed: p.speed });
         });
@@ -1017,13 +1006,11 @@
         // ================================================================
         function createAsteroidBelt3D() {
             const count = CONFIG.asteroidCount;
-            // Tạo một vài hình dạng cơ bản cho tiểu hành tinh
-            const geo = new THREE.DodecahedronGeometry(0.4, 0);
-            const geo2 = new THREE.OctahedronGeometry(0.35);
-            const geo3 = new THREE.IcosahedronGeometry(0.3);
-            const geos = [geo, geo2, geo3];
-
-            // Chọn ngẫu nhiên một hình dạng
+            const geos = [
+                new THREE.DodecahedronGeometry(0.4, 0),
+                new THREE.OctahedronGeometry(0.35),
+                new THREE.IcosahedronGeometry(0.3)
+            ];
             const useGeo = geos[Math.floor(Math.random() * geos.length)];
 
             const dummy = new THREE.Object3D();
@@ -1036,12 +1023,10 @@
                 metalness: 0.2,
             });
 
-            // Sử dụng InstancedMesh để tối ưu hiệu suất
             const mesh = new THREE.InstancedMesh(useGeo, mat, count);
             mesh.castShadow = true;
             mesh.receiveShadow = true;
 
-            const positions = [];
             for (let i = 0; i < count; i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const radius = 250 + Math.random() * 60;
@@ -1056,7 +1041,6 @@
                 dummy.updateMatrix();
                 mesh.setMatrixAt(i, dummy.matrix);
 
-                // Màu sắc đa dạng
                 const brightness = 0.4 + Math.random() * 0.6;
                 color.setHSL(0.08 + Math.random() * 0.05, 0.2, brightness * 0.6);
                 mesh.setColorAt(i, color);
@@ -1078,7 +1062,7 @@
         const audioLoader = new THREE.AudioLoader();
         const bgMusic = new THREE.Audio(audioListener);
 
-        document.getElementById('toggleAudioBtn').addEventListener('click', function() {
+        on('toggleAudioBtn', 'click', function() {
             if (!STATE.isAudioPlaying) {
                 audioLoader.load('asset/audio/space_ambient.mp3', (buffer) => {
                     bgMusic.setBuffer(buffer);
@@ -1087,7 +1071,7 @@
                     bgMusic.play();
                     STATE.isAudioPlaying = true;
                     this.innerHTML = '🔊 Âm thanh (ON)';
-                }, undefined, () => alert('Không tìm thấy file âm thanh.'));
+                }, undefined, () => showNotification('⚠️ Không tìm thấy file âm thanh.'));
             } else {
                 bgMusic.pause();
                 STATE.isAudioPlaying = false;
@@ -1096,18 +1080,66 @@
         });
 
         // ================================================================
-        //  UI EVENTS (giữ nguyên)
+        //  PLANET FOCUS / QUICK-NAV (tính năng mới)
         // ================================================================
-        document.getElementById('mode2DBtn').addEventListener('click', () => window.location.href = 'index.html');
-        document.getElementById('speedRange').addEventListener('input', function() {
-            STATE.timeScale = parseFloat(this.value);
-            document.getElementById('speedLabel').innerText = `⏱ Tốc độ thời gian: ${STATE.timeScale.toFixed(1)}x`;
+        const quickNavEl = $('quickNav');
+        planetMeshes.forEach((p, i) => {
+            const chip = document.createElement('button');
+            chip.className = 'chip';
+            chip.textContent = p.mesh.userData.name;
+            chip.title = `Phím tắt: ${i + 1}`;
+            chip.dataset.name = p.mesh.userData.name;
+            chip.addEventListener('click', () => focusPlanet(p.mesh));
+            quickNavEl.appendChild(chip);
         });
-        document.getElementById('pauseBtn').addEventListener('click', function() {
+
+        function highlightQuickNav(name) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.name === name));
+        }
+
+        function focusPlanet(mesh, animateCamera = true) {
+            STATE.trackedPlanet = mesh;
+            $('info-panel').style.display = 'block';
+            $('planet-name').innerText = mesh.userData.name;
+            $('planet-desc').innerText = mesh.userData.info;
+            showNotification(`🔭 Đang theo dõi: ${mesh.userData.name}`);
+            highlightQuickNav(mesh.userData.name);
+
+            if (animateCamera && !STATE.isFlightMode) {
+                const wp = new THREE.Vector3();
+                mesh.getWorldPosition(wp);
+                const dir = camera.position.clone().sub(orbitControls.target);
+                if (dir.lengthSq() < 0.001) dir.set(0, 0.3, 1);
+                dir.normalize();
+                const dist = Math.max((mesh.userData.radius || 8) * 9, 45);
+                STATE.cameraFocusTarget = wp.clone().add(dir.multiplyScalar(dist));
+            }
+        }
+
+        window.stopTracking = function() {
+            STATE.trackedPlanet = null;
+            STATE.cameraFocusTarget = null;
+            $('info-panel').style.display = 'none';
+            highlightQuickNav(null);
+            if (!STATE.isFlightMode) orbitControls.target.set(0, 0, 0);
+        };
+
+        // ================================================================
+        //  UI EVENTS
+        // ================================================================
+        on('mode2DBtn', 'click', () => window.location.href = 'index.html');
+
+        on('speedRange', 'input', function() {
+            STATE.timeScale = parseFloat(this.value);
+            $('speedLabel').innerText = `⏱ Tốc độ thời gian: ${STATE.timeScale.toFixed(1)}x`;
+        });
+
+        on('pauseBtn', 'click', function() {
             STATE.isPaused = !STATE.isPaused;
             this.innerHTML = STATE.isPaused ? '▶️ Tiếp tục' : '⏸ Dừng mô phỏng';
         });
-        document.getElementById('resetCamBtn').addEventListener('click', () => {
+
+        on('resetCamBtn', 'click', () => {
             stopTracking();
             camera.position.set(0, 400, 900);
             camera.rotation.set(0, 0, 0);
@@ -1115,25 +1147,93 @@
             showNotification('🎯 Camera đã được reset');
         });
 
-        document.getElementById('toggleFlightModeBtn').addEventListener('click', function() {
+        function updateStatsVisibility() {
+            $('stats-panel').style.display = (STATE.isFlightMode || STATE.showStats) ? 'block' : 'none';
+        }
+
+        on('statsToggleBtn', 'click', function() {
+            STATE.showStats = !STATE.showStats;
+            this.classList.toggle('active', STATE.showStats);
+            updateStatsVisibility();
+        });
+
+        on('toggleFlightModeBtn', 'click', function() {
             STATE.isFlightMode = !STATE.isFlightMode;
             if (STATE.isFlightMode) {
                 orbitControls.enabled = false;
                 this.innerHTML = '✈️ Chế độ bay (ON)';
-                document.getElementById('stats-panel').style.display = 'block';
-                document.getElementById('ui-container').style.display = 'none';
+                $('ui-container').style.display = 'none';
                 STATE.velocity.set(0, 0, 0);
-                if (!STATE.isPointerLocked) pointerLockControls.lock();
-                showNotification('✈️ Bay tự do: WASD, Space gọi thiên thạch');
+                STATE.cameraFocusTarget = null;
+                if (CONFIG.isTouchDevice) {
+                    $('touch-controls').style.display = 'flex';
+                    showNotification('✈️ Bay tự do: chạm nút để di chuyển, vuốt màn hình để nhìn quanh');
+                } else {
+                    try { if (!STATE.isPointerLocked) pointerLockControls.lock(); } catch (e) { /* Pointer Lock không khả dụng */ }
+                    showNotification('✈️ Bay tự do: WASD để di chuyển, Space gọi thiên thạch');
+                }
+                updateStatsVisibility();
             } else {
-                if (STATE.isPointerLocked) pointerLockControls.unlock();
+                if (STATE.isPointerLocked) { try { pointerLockControls.unlock(); } catch (e) {} }
                 orbitControls.enabled = true;
                 this.innerHTML = '✈️ Chế độ bay (OFF)';
-                document.getElementById('stats-panel').style.display = 'none';
-                document.getElementById('ui-container').style.display = 'block';
+                $('touch-controls').style.display = 'none';
+                $('ui-container').style.display = 'block';
+                updateStatsVisibility();
                 showNotification('🔄 Đã thoát chế độ bay');
             }
             stopTracking();
+        });
+
+        // ---- Panel thu gọn (mobile-friendly) ----
+        on('uiCollapseBtn', 'click', function() {
+            $('ui-container').classList.toggle('collapsed');
+            this.textContent = $('ui-container').classList.contains('collapsed') ? '▸' : '▾';
+        });
+        if (window.innerWidth < 480) {
+            $('ui-container').classList.add('collapsed');
+            $('uiCollapseBtn').textContent = '▸';
+        }
+
+        // ---- Nhãn / Quỹ đạo / Toàn màn hình / Chụp ảnh (tính năng mới) ----
+        function toggleLabels() {
+            STATE.showLabels = !STATE.showLabels;
+            labelSprites.forEach(l => l.visible = STATE.showLabels);
+            $('toggleLabelsBtn').classList.toggle('active', STATE.showLabels);
+            showNotification(`🏷️ Nhãn hành tinh: ${STATE.showLabels ? 'BẬT' : 'TẮT'}`);
+        }
+        function toggleOrbits() {
+            STATE.showOrbits = !STATE.showOrbits;
+            orbitLineMeshes.forEach(o => o.visible = STATE.showOrbits);
+            $('toggleOrbitsBtn').classList.toggle('active', STATE.showOrbits);
+            showNotification(`🛰️ Đường quỹ đạo: ${STATE.showOrbits ? 'BẬT' : 'TẮT'}`);
+        }
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => showNotification('⚠️ Không thể bật toàn màn hình'));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        function takeScreenshot() {
+            renderer.render(scene, camera);
+            const link = document.createElement('a');
+            link.download = `cosmic-explorer-${Date.now()}.png`;
+            link.href = renderer.domElement.toDataURL('image/png');
+            link.click();
+            showNotification('📸 Đã lưu ảnh chụp màn hình');
+        }
+        function toggleHelp() {
+            const panel = $('help-panel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        on('toggleLabelsBtn', 'click', toggleLabels);
+        on('toggleOrbitsBtn', 'click', toggleOrbits);
+        on('fullscreenBtn', 'click', toggleFullscreen);
+        on('screenshotBtn', 'click', takeScreenshot);
+        document.addEventListener('fullscreenchange', () => {
+            $('fullscreenBtn').classList.toggle('active', !!document.fullscreenElement);
         });
 
         // ================================================================
@@ -1200,7 +1300,7 @@
         function triggerMeteorShower() {
             if (meteorActive) return;
             meteorActive = true;
-            const alert = document.getElementById('meteor-alert');
+            const alert = $('meteor-alert');
             alert.classList.add('show');
             showNotification('☄️ CẢNH BÁO: Thiên thạch đang lao về phía Trái Đất!');
 
@@ -1216,23 +1316,34 @@
             setTimeout(() => { meteorActive = false; }, 12000);
         }
 
-        document.getElementById('meteorBtn').addEventListener('click', triggerMeteorShower);
+        on('meteorBtn', 'click', triggerMeteorShower);
 
         // ================================================================
         //  DEVELOPMENT PANEL
         // ================================================================
-        const devPanel = document.getElementById('dev-panel');
-        document.getElementById('devBtn').addEventListener('click', () => devPanel.classList.add('active'));
-        document.getElementById('devCloseBtn').addEventListener('click', () => devPanel.classList.remove('active'));
+        const devPanel = $('dev-panel');
+        on('devBtn', 'click', () => devPanel.classList.add('active'));
+        on('devCloseBtn', 'click', () => devPanel.classList.remove('active'));
         devPanel.addEventListener('click', (e) => { if (e.target === devPanel) devPanel.classList.remove('active'); });
+
+        // ================================================================
+        //  CREATOR CARD & HELP PANEL (click-outside to close)
+        // ================================================================
+        on('creator-info-icon', 'click', (e) => { e.stopPropagation(); $('creator-card').style.display = $('creator-card').style.display === 'block' ? 'none' : 'block'; });
+        on('help-icon', 'click', (e) => { e.stopPropagation(); toggleHelp(); });
+        document.addEventListener('click', (e) => {
+            const card = $('creator-card'), icon = $('creator-info-icon');
+            if (!card.contains(e.target) && e.target !== icon) card.style.display = 'none';
+            const help = $('help-panel'), helpIcon = $('help-icon');
+            if (!help.contains(e.target) && e.target !== helpIcon) help.style.display = 'none';
+        });
 
         // ================================================================
         //  NOTIFICATION
         // ================================================================
         let notifTimeout;
-
         function showNotification(text) {
-            const el = document.getElementById('notification');
+            const el = $('notification');
             el.textContent = text;
             el.classList.add('show');
             clearTimeout(notifTimeout);
@@ -1250,23 +1361,27 @@
             mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
-            const targets = planetMeshes.map(m => m.mesh);
-            const hits = raycaster.intersectObjects(targets);
-            if (hits.length > 0) {
-                const obj = hits[0].object;
-                STATE.trackedPlanet = obj;
-                document.getElementById('info-panel').style.display = 'block';
-                document.getElementById('planet-name').innerText = obj.userData.name;
-                document.getElementById('planet-desc').innerText = obj.userData.info;
-                showNotification(`🔭 Đang theo dõi: ${obj.userData.name}`);
-            }
+            const hits = raycaster.intersectObjects(planetMeshes.map(m => m.mesh));
+            if (hits.length > 0) focusPlanet(hits[0].object);
         });
 
-        window.stopTracking = function() {
-            STATE.trackedPlanet = null;
-            document.getElementById('info-panel').style.display = 'none';
-            if (!STATE.isFlightMode) orbitControls.target.set(0, 0, 0);
-        };
+        // ================================================================
+        //  KEYBOARD — chung (chuyển nhanh hành tinh, tiện ích)
+        // ================================================================
+        document.addEventListener('keydown', (e) => {
+            if (e.target && e.target.tagName === 'INPUT') return;
+            if (e.code.startsWith('Digit')) {
+                const idx = parseInt(e.code.replace('Digit', ''), 10) - 1;
+                if (planetMeshes[idx]) focusPlanet(planetMeshes[idx].mesh);
+                return;
+            }
+            switch (e.code) {
+                case 'KeyH': toggleHelp(); break;
+                case 'KeyF': toggleFullscreen(); break;
+                case 'KeyL': toggleLabels(); break;
+                case 'KeyO': toggleOrbits(); break;
+            }
+        });
 
         // ================================================================
         //  KEYBOARD (Flight)
@@ -1274,71 +1389,69 @@
         document.addEventListener('keydown', (e) => {
             if (!STATE.isFlightMode) return;
             switch (e.code) {
-                case 'KeyW':
-                    STATE.moveForward = true;
-                    e.preventDefault();
-                    break;
-                case 'KeyA':
-                    STATE.moveLeft = true;
-                    e.preventDefault();
-                    break;
-                case 'KeyS':
-                    STATE.moveBackward = true;
-                    e.preventDefault();
-                    break;
-                case 'KeyD':
-                    STATE.moveRight = true;
-                    e.preventDefault();
-                    break;
-                case 'Space':
-                    e.preventDefault();
-                    triggerMeteorShower();
-                    break;
+                case 'KeyW': STATE.moveForward = true; e.preventDefault(); break;
+                case 'KeyA': STATE.moveLeft = true; e.preventDefault(); break;
+                case 'KeyS': STATE.moveBackward = true; e.preventDefault(); break;
+                case 'KeyD': STATE.moveRight = true; e.preventDefault(); break;
+                case 'Space': e.preventDefault(); triggerMeteorShower(); break;
             }
         });
         document.addEventListener('keyup', (e) => {
             if (!STATE.isFlightMode) return;
             switch (e.code) {
-                case 'KeyW':
-                    STATE.moveForward = false;
-                    e.preventDefault();
-                    break;
-                case 'KeyA':
-                    STATE.moveLeft = false;
-                    e.preventDefault();
-                    break;
-                case 'KeyS':
-                    STATE.moveBackward = false;
-                    e.preventDefault();
-                    break;
-                case 'KeyD':
-                    STATE.moveRight = false;
-                    e.preventDefault();
-                    break;
+                case 'KeyW': STATE.moveForward = false; e.preventDefault(); break;
+                case 'KeyA': STATE.moveLeft = false; e.preventDefault(); break;
+                case 'KeyS': STATE.moveBackward = false; e.preventDefault(); break;
+                case 'KeyD': STATE.moveRight = false; e.preventDefault(); break;
             }
         });
 
         document.addEventListener('pointerlockchange', () => {
             STATE.isPointerLocked = document.pointerLockElement === document.body;
-            if (!STATE.isPointerLocked && STATE.isFlightMode) {
+            if (!STATE.isPointerLocked && STATE.isFlightMode && !CONFIG.isTouchDevice) {
                 setTimeout(() => {
-                    if (STATE.isFlightMode && !STATE.isPointerLocked) pointerLockControls.lock();
+                    if (STATE.isFlightMode && !STATE.isPointerLocked) { try { pointerLockControls.lock(); } catch (e) {} }
                 }, 100);
             }
         });
 
         // ================================================================
-        //  CREATOR CARD
+        //  TOUCH CONTROLS (di chuyển + nhìn quanh trên thiết bị cảm ứng)
         // ================================================================
-        const infoIcon = document.getElementById('creator-info-icon');
-        const creatorCard = document.getElementById('creator-card');
-        infoIcon.addEventListener('click', (e) => {
-            e.stopPropagation();
-            creatorCard.style.display = creatorCard.style.display === 'block' ? 'none' : 'block';
+        function bindTouchHold(id, onDown, onUp) {
+            const el = $(id);
+            if (!el) return;
+            const start = (e) => { e.preventDefault(); onDown(); };
+            const end = (e) => { e.preventDefault(); onUp(); };
+            el.addEventListener('touchstart', start, { passive: false });
+            el.addEventListener('touchend', end);
+            el.addEventListener('touchcancel', end);
+        }
+        bindTouchHold('touchForward', () => STATE.moveForward = true, () => STATE.moveForward = false);
+        bindTouchHold('touchBack', () => STATE.moveBackward = true, () => STATE.moveBackward = false);
+        bindTouchHold('touchLeft', () => STATE.moveLeft = true, () => STATE.moveLeft = false);
+        bindTouchHold('touchRight', () => STATE.moveRight = true, () => STATE.moveRight = false);
+        on('touchMeteor', 'touchstart', (e) => { e.preventDefault(); triggerMeteorShower(); }, { passive: false });
+
+        let touchLookActive = false, lastTouchX = 0, lastTouchY = 0;
+        renderer.domElement.addEventListener('touchstart', (e) => {
+            if (!STATE.isFlightMode || e.touches.length !== 1) return;
+            touchLookActive = true;
+            lastTouchX = e.touches[0].clientX;
+            lastTouchY = e.touches[0].clientY;
         });
-        document.addEventListener('click', (e) => {
-            if (!creatorCard.contains(e.target) && e.target !== infoIcon) creatorCard.style.display = 'none';
-        });
+        renderer.domElement.addEventListener('touchmove', (e) => {
+            if (!STATE.isFlightMode || !touchLookActive) return;
+            e.preventDefault();
+            const dx = e.touches[0].clientX - lastTouchX;
+            const dy = e.touches[0].clientY - lastTouchY;
+            lastTouchX = e.touches[0].clientX;
+            lastTouchY = e.touches[0].clientY;
+            camera.rotation.y -= dx * 0.0032;
+            camera.rotation.x -= dy * 0.0032;
+            camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+        }, { passive: false });
+        renderer.domElement.addEventListener('touchend', () => touchLookActive = false);
 
         // ================================================================
         //  ANIMATION LOOP
@@ -1348,6 +1461,18 @@
         function animate() {
             requestAnimationFrame(animate);
             const delta = Math.min(clock.getDelta(), 0.05);
+
+            // FPS counter
+            STATE.frameCount++;
+            const now = performance.now();
+            if (!STATE.lastFpsTime) STATE.lastFpsTime = now;
+            if (now - STATE.lastFpsTime >= 500) {
+                const fps = Math.round((STATE.frameCount * 1000) / (now - STATE.lastFpsTime));
+                const fpsEl = $('fps-counter');
+                if (fpsEl) fpsEl.textContent = fps;
+                STATE.frameCount = 0;
+                STATE.lastFpsTime = now;
+            }
 
             // Update planets
             if (!STATE.isPaused) {
@@ -1359,8 +1484,13 @@
                 if (moonObj) {
                     moonObj.group.rotation.y += 0.05 * STATE.timeScale * delta * 60;
                 }
-                STATE.simTime.setMilliseconds(STATE.simTime.getMilliseconds() + delta * 1000 * STATE.timeScale *
-                86400);
+                STATE.simTime.setMilliseconds(STATE.simTime.getMilliseconds() + delta * 1000 * STATE.timeScale * 86400);
+            }
+
+            // Camera fly-to khi chọn hành tinh từ quick-nav / click
+            if (STATE.cameraFocusTarget && !STATE.isFlightMode) {
+                camera.position.lerp(STATE.cameraFocusTarget, 0.06);
+                if (camera.position.distanceTo(STATE.cameraFocusTarget) < 1.5) STATE.cameraFocusTarget = null;
             }
 
             // Flight mode
@@ -1375,32 +1505,28 @@
                 forward.normalize();
                 const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
 
-                let mx = 0,
-                    mz = 0;
+                let mx = 0, mz = 0;
                 if (STATE.moveForward) mz -= 1;
                 if (STATE.moveBackward) mz += 1;
                 if (STATE.moveLeft) mx -= 1;
                 if (STATE.moveRight) mx += 1;
                 const len = Math.sqrt(mx * mx + mz * mz);
-                if (len > 0) { mx /= len;
-                    mz /= len; }
+                if (len > 0) { mx /= len; mz /= len; }
 
                 v.x += mx * CONFIG.flightSpeed * delta * 2;
                 v.z += mz * CONFIG.flightSpeed * delta * 2;
                 const maxSpd = CONFIG.flightSpeed * 2;
                 const curSpd = Math.sqrt(v.x * v.x + v.z * v.z);
-                if (curSpd > maxSpd) { v.x = (v.x / curSpd) * maxSpd;
-                    v.z = (v.z / curSpd) * maxSpd; }
+                if (curSpd > maxSpd) { v.x = (v.x / curSpd) * maxSpd; v.z = (v.z / curSpd) * maxSpd; }
 
                 const moveVec = new THREE.Vector3();
                 moveVec.addScaledVector(forward, -v.z * delta);
                 moveVec.addScaledVector(right, -v.x * delta);
                 camera.position.add(moveVec);
 
-                document.getElementById('camera-pos').innerText =
-                    `${camera.position.x.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${camera.position.z.toFixed(0)}`;
+                $('camera-pos').innerText = `${camera.position.x.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${camera.position.z.toFixed(0)}`;
                 const speedKmh = Math.sqrt(v.x * v.x + v.z * v.z) * 0.5;
-                document.getElementById('flight-speed').innerText = `${speedKmh.toFixed(1)} km/s`;
+                $('flight-speed').innerText = `${speedKmh.toFixed(1)} km/s`;
             }
 
             // Tracking
@@ -1410,11 +1536,10 @@
                 if (!STATE.isFlightMode) {
                     orbitControls.target.lerp(wp, 0.05);
                 } else {
-                    document.getElementById('tracked-distance').innerText =
-                        `${camera.position.distanceTo(wp).toFixed(2)} đơn vị`;
+                    $('tracked-distance').innerText = `${camera.position.distanceTo(wp).toFixed(2)} đơn vị`;
                 }
             } else if (STATE.isFlightMode) {
-                document.getElementById('tracked-distance').innerText = 'Không theo dõi';
+                $('tracked-distance').innerText = 'Không theo dõi';
             }
 
             // Update meteor
@@ -1469,27 +1594,17 @@
             });
 
             // Update datetime
-            document.getElementById('sim-datetime').innerText =
-                STATE.simTime.toLocaleString('vi-VN', {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
+            $('sim-datetime').innerText = STATE.simTime.toLocaleString('vi-VN', {
+                year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
 
-            // Update atmosphere uniforms
-            // Cập nhật viewVector cho các shader atmosphere
+            // Update atmosphere uniforms (viewVector cho shader)
             planetMeshes.forEach(p => {
-                if (p.mesh.children) {
-                    p.mesh.children.forEach(child => {
-                        if (child.isMesh && child.material.uniforms && child.material.uniforms
-                            .viewVector) {
-                            child.material.uniforms.viewVector.value = camera.position;
-                        }
-                    });
-                }
+                p.mesh.children.forEach(child => {
+                    if (child.isMesh && child.material.uniforms && child.material.uniforms.viewVector) {
+                        child.material.uniforms.viewVector.value = camera.position;
+                    }
+                });
             });
 
             // Render
@@ -1511,17 +1626,19 @@
         // ================================================================
         animate();
 
-        // Demo meteor after 10s
+        // Demo meteor sau 10s
         setTimeout(() => {
             if (!meteorActive) triggerMeteorShower();
         }, 10000);
 
-        console.log('🚀 Cosmic Explorer v3.1 loaded!');
-        console.log('✨ Cải tiến:');
-        console.log('  - Bầu khí quyển chân thực với hiệu ứng tán xạ Rayleigh + rim glow');
-        console.log('  - Vành đai tiểu hành tinh 3D chi tiết (hàng nghìn mesh nhỏ)');
-        console.log('  - Tốc độ thiên thạch đã giảm, có tên riêng');
-        console.log('  - Code tối ưu, sử dụng InstancedMesh cho belt');
+        console.log('🚀 Cosmic Explorer v4.0 loaded!');
+        console.log('✨ Cải tiến so với v3.1:');
+        console.log('  - UI có thể thu gọn, chuyển nhanh đến hành tinh (chip + phím 1-8) kèm hiệu ứng bay camera mượt');
+        console.log('  - Bật/tắt nhãn hành tinh, quỹ đạo, bảng thống kê (FPS, tọa độ...) độc lập với chế độ bay');
+        console.log('  - Toàn màn hình, chụp ảnh màn hình, panel trợ giúp phím tắt (phím H)');
+        console.log('  - Hỗ trợ điều khiển chạm (nút di chuyển + vuốt để nhìn) trên thiết bị di động khi bay tự do');
+        console.log('  - Thanh tiến trình tải tài nguyên trực quan hơn, thông báo lỗi âm thanh không còn dùng alert()');
+        console.log('  - Gộp code shader khí quyển dùng chung, loại bỏ code chết, dùng helper $()/on() để tinh gọn binding sự kiện');
     </script>
 </body>
 
